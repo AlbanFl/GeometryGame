@@ -91,6 +91,8 @@ private:
 	void GameRelease();
 	void GameUpdate(float frame_time);
 	void GameRender();
+
+	float camera_pos;
 };
 
 #endif // _SCENE_APP_H

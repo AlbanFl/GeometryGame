@@ -9,6 +9,12 @@
 #include <input/sony_controller_input_manager.h>
 #include <graphics/sprite.h>
 #include "load_texture.h"
+#include <input/touch_input_manager.h>
+#include <input/input_manager.h>
+#include <graphics/scene.h>
+#include <animation/skeleton.h>
+#include <animation/animation.h>
+#include <input/keyboard.h>
 
 SceneApp::SceneApp(gef::Platform& platform) :
 	Application(platform),
@@ -134,7 +140,7 @@ void SceneApp::InitPlayer()
 void SceneApp::InitGround()
 {
 	// ground dimensions
-	gef::Vector4 ground_half_dimensions(5.0f, 0.5f, 0.5f);
+	gef::Vector4 ground_half_dimensions(100.0f, 0.5f, 0.5f);
 
 	// setup the mesh for the ground
 	ground_mesh_ = primitive_builder_->CreateBoxMesh(ground_half_dimensions);
@@ -202,6 +208,7 @@ void SceneApp::SetupLights()
 
 void SceneApp::UpdateSimulation(float frame_time)
 {
+	camera_pos = player_body_->GetPosition().x;
 	// update physics world
 	float32 timeStep = 1.0f / 60.0f;
 
@@ -260,6 +267,14 @@ void SceneApp::UpdateSimulation(float frame_time)
 			}
 		}
 
+		const gef::SonyController* controller = input_manager_->controller_input()->GetController(0);
+		gef::Keyboard* keyboard = input_manager_->keyboard();
+
+		if (controller->buttons_pressed() && gef_SONY_CTRL_CROSS || (keyboard->IsKeyDown(gef::Keyboard::KC_X))) {
+			player_body_->ApplyLinearImpulse(b2Vec2(0.0f, 1.0f), player_body_->GetPosition(), true);
+		}
+
+
 		// Get next contact point
 		contact = contact->GetNext();
 	}
@@ -279,8 +294,9 @@ void SceneApp::FrontendRelease()
 void SceneApp::FrontendUpdate(float frame_time)
 {
 	const gef::SonyController* controller = input_manager_->controller_input()->GetController(0);
+	gef::Keyboard* keyboard = input_manager_->keyboard();
 
-	if (controller->buttons_pressed() && gef_SONY_CTRL_CROSS)
+	if (controller->buttons_pressed() && gef_SONY_CTRL_CROSS || (keyboard->IsKeyDown(gef::Keyboard::KC_X)))
 	{
 		FrontendRelease();
 		game_state_ = PLAY_GAME;
@@ -326,6 +342,7 @@ void SceneApp::FrontendRender()
 
 void SceneApp::GameInit()
 {
+	camera_pos = 0;
 	// create the renderer for draw 3D geometry
 	renderer_3d_ = gef::Renderer3D::Create(platform_);
 
@@ -336,7 +353,7 @@ void SceneApp::GameInit()
 	SetupLights();
 
 	// initialise the physics world
-	b2Vec2 gravity(0.0f, -9.81f);
+	b2Vec2 gravity(5.0f, -9.81f);
 	world_ = new b2World(gravity);
 
 	InitPlayer();
@@ -384,33 +401,10 @@ void SceneApp::GameRelease()
 
 void SceneApp::GameUpdate(float frame_time)
 {
+
 	const gef::SonyController* controller = input_manager_->controller_input()->GetController(0);
 
 	// trigger a sound effect
-	if (audio_manager_)
-	{
-		if (controller->buttons_pressed() & gef_SONY_CTRL_CROSS)
-		{
-			sfx_voice_id_ = audio_manager_->PlaySample(sfx_id_, true);
-
-			gef::VolumeInfo volume_info;
-			volume_info.volume = 0.5f;
-			volume_info.pan = -1.0f;
-
-			audio_manager_->SetSampleVoiceVolumeInfo(sfx_voice_id_, volume_info);
-
-			audio_manager_->SetSamplePitch(sfx_voice_id_, 1.5f);
-		}
-
-		if (controller->buttons_pressed() & gef_SONY_CTRL_TRIANGLE)
-		{
-			if (sfx_voice_id_ != -1)
-			{
-				audio_manager_->StopPlayingSampleVoice(sfx_voice_id_);
-				sfx_voice_id_ = -1;
-			}
-		}
-	}
 
 	UpdateSimulation(frame_time);
 
@@ -434,8 +428,8 @@ void SceneApp::GameRender()
 	renderer_3d_->set_projection_matrix(projection_matrix);
 
 	// view
-	gef::Vector4 camera_eye(-2.0f, 2.0f, 10.0f);
-	gef::Vector4 camera_lookat(0.0f, 0.0f, 0.0f);
+	gef::Vector4 camera_eye(camera_pos, 2.0f, 10.0f);
+	gef::Vector4 camera_lookat(camera_pos, 0.0f, 0.0f);
 	gef::Vector4 camera_up(0.0f, 1.0f, 0.0f);
 	gef::Matrix44 view_matrix;
 	view_matrix.LookAt(camera_eye, camera_lookat, camera_up);
