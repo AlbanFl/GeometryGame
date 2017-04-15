@@ -93,6 +93,15 @@ bool SceneApp::Update(float frame_time)
 			GameOptionsUpdate(frame_time);
 		}
 		break;
+		case FINISH_SCREEN:
+		{
+			FinishUpdate(frame_time);
+		}
+		break;
+		case PAUSE_SCREEN:
+		{
+			PausescreenUpdate(frame_time);
+		}
 	}
 	return true;
 }
@@ -118,6 +127,16 @@ void SceneApp::Render()
 		case GAME_OPTIONS:
 		{
 			GameOptionsRender();
+		}
+		break;
+		case FINISH_SCREEN:
+		{
+			FinishRender();
+		}
+		break;
+		case PAUSE_SCREEN:
+		{
+			PausescreenRender();
 		}
 		break;
 	}
@@ -429,7 +448,7 @@ void SceneApp::SetupLights()
 void SceneApp::UpdateSimulation(float frame_time)
 {
 	//gef::DebugOut("%.f \n", player_body_->GetLinearVelocity().x);
-	gef::DebugOut("%.11f \n", player_body_->GetPosition().y);
+	//gef::DebugOut("%.11f \n", player_body_->GetPosition().y);
 	player_body_->SetAngularVelocity(0);
 
 
@@ -483,9 +502,9 @@ void SceneApp::UpdateSimulation(float frame_time)
 
 			if (gameObjectA)
 			{
-				if (gameObjectA->type() == PLAYER)
+				if (gameObjectA->type() == FINISH)
 				{
-					player = (Player*)bodyA->GetUserData();
+					
 				}
 			}
 
@@ -708,17 +727,19 @@ void SceneApp::GameRelease()
 
 void SceneApp::GameUpdate(float frame_time)
 {
-
+	gef::Keyboard* keyboard = input_manager_->keyboard();
 	const gef::SonyController* controller = input_manager_->controller_input()->GetController(0);
 
 	// trigger a sound effect
 
 	UpdateSimulation(frame_time);
 
-	/*if (controller->buttons_pressed && gef_SONY_CTRL_OPTIONS)
+	if (controller->buttons_pressed() && gef_SONY_CTRL_START || (keyboard->IsKeyPressed(gef::Keyboard::KC_P)))
 	{
-		game_state_ = FRONTEND;
-	}*/
+		is_paused = true;
+		game_state_ = PAUSE_SCREEN;
+		PausescreenInit();
+	}
 
 
 }
@@ -809,12 +830,12 @@ void SceneApp::GameOptionsUpdate(float frame_time)
 			game_state_ = FRONTEND;
 			FrontendInit();
 		}
-		/*if (is_paused == true)
+		if (is_paused == true)
 		{
 			GameOptionsRelease();
-			game_state_ = PAUSE;
-			PauseInit();
-		}*/
+			game_state_ = PAUSE_SCREEN;
+			PausescreenInit();
+		}
 	}
 
 	if (sound_selected == true) {
@@ -825,33 +846,22 @@ void SceneApp::GameOptionsUpdate(float frame_time)
 				{
 					sound_volume_ = sound_volume_ + 0.1;
 					GameOptionsRender();
-					//UpdateAudio(frame_time);
 				}
 			}
 			
 			if (controller->buttons_pressed() & gef_SONY_CTRL_LEFT || (keyboard->IsKeyPressed(gef::Keyboard::KC_LEFT)))
 			{
-				if (sound_volume_ > 0.0f) {
+				if (sound_volume_ > 0.0f)
+				{
 					sound_volume_ = sound_volume_ - 0.1;
 					GameOptionsRender();
-					//UpdateAudio(frame_time);
+		
 				}
 				
 
 			}
 		}
-		/*else if (sound_volume_ > 1.0f)
-		{
-			sound_volume_ = 1.0f;
-			GameOptionsRender();
-			//UpdateAudio(frame_time);
-		}
-		else if (sound_volume_ < 0.0f)
-		{
-			sound_volume_ = 0.0f;
-			GameOptionsRender();
-			//UpdateAudio(frame_time);
-		}*/
+
 	}
 	else {
 
@@ -956,6 +966,176 @@ void SceneApp::GameOptionsRender()
 		0xffffffff,
 		gef::TJ_CENTRE,
 		"BACK");
+
+	sprite_renderer_->End();
+}
+
+void SceneApp::FinishInit()
+{
+}
+
+void SceneApp::FinishRelease()
+{
+}
+
+void SceneApp::FinishUpdate(float frame_time)
+{
+}
+
+void SceneApp::FinishRender()
+{
+}
+
+void SceneApp::PausescreenInit()
+{
+	continue_selected = true;
+}
+
+void SceneApp::PausescreenRelease()
+{
+}
+
+void SceneApp::PausescreenUpdate(float frame_time)
+{
+	const gef::SonyController* controller = input_manager_->controller_input()->GetController(0);
+	gef::Keyboard* keyboard = input_manager_->keyboard();
+
+	if (controller->buttons_pressed() & gef_SONY_CTRL_DOWN || (keyboard->IsKeyPressed(gef::Keyboard::KC_DOWN)))
+	{
+		if (continue_selected == true)
+		{
+			continue_selected = false;
+			options_selected = true;
+		}
+		else if (options_selected == true) {
+			options_selected = false;
+		}
+	}
+
+	else if (controller->buttons_pressed() & gef_SONY_CTRL_UP || (keyboard->IsKeyPressed(gef::Keyboard::KC_UP)))
+	{
+		if (options_selected == true)
+		{
+			options_selected = false;
+			continue_selected = true;
+
+		}
+		if (options_selected == false && continue_selected == false)
+		{
+			options_selected = true;
+		}
+	}
+
+	if (controller->buttons_pressed() & gef_SONY_CTRL_CROSS || (keyboard->IsKeyPressed(gef::Keyboard::KC_X)))
+	{
+		if (continue_selected == true)
+		{
+			game_state_ = PLAY_GAME;
+			GameInit();
+			is_paused = false;
+		}
+		else if (options_selected == true) {
+			game_state_ = GAME_OPTIONS;
+			GameOptionsInit();
+		}
+		else if (options_selected == false && continue_selected == false)
+		{
+			game_state_ = FRONTEND;
+			FrontendInit();
+			is_paused = false;
+		}
+	}
+
+}
+	
+
+
+void SceneApp::PausescreenRender()
+{
+
+	sprite_renderer_->Begin();
+	if (continue_selected == true) {
+
+
+		font_->RenderText(
+			sprite_renderer_,
+			gef::Vector4(platform_.width()*0.5f, platform_.height()*0.5f - 56.0f, -0.99f),
+			1.5f,
+			0xffffffff,
+			gef::TJ_CENTRE,
+			"Continue");
+
+
+		font_->RenderText(
+			sprite_renderer_,
+			gef::Vector4(platform_.width()*0.5f, platform_.height()*0.5f - 16.0f, -0.99f),
+			1.0f,
+			0xff000000,
+			gef::TJ_CENTRE,
+			"Options");
+
+		font_->RenderText(
+			sprite_renderer_,
+			gef::Vector4(platform_.width()*0.5f, platform_.height()*0.5f + 14.0f, -0.99f),
+			1.0f,
+			0xff000000,
+			gef::TJ_CENTRE,
+			"Quit");
+
+	}
+	else if(options_selected == true) {
+
+		font_->RenderText(
+			sprite_renderer_,
+			gef::Vector4(platform_.width()*0.5f, platform_.height()*0.5f - 56.0f, -0.99f),
+			1.5f,
+			0xff000000,
+			gef::TJ_CENTRE,
+			"Continue");
+
+		font_->RenderText(
+			sprite_renderer_,
+			gef::Vector4(platform_.width()*0.5f, platform_.height()*0.5f - 16.0f, -0.99f),
+			1.0f,
+			0xffffffff,
+			gef::TJ_CENTRE,
+			"Options");
+
+		font_->RenderText(
+			sprite_renderer_,
+			gef::Vector4(platform_.width()*0.5f, platform_.height()*0.5f + 14.0f, -0.99f),
+			1.0f,
+			0xff000000,
+			gef::TJ_CENTRE,
+			"Quit");
+	}
+	else if (options_selected == false && continue_selected == false)
+	{
+		font_->RenderText(
+			sprite_renderer_,
+			gef::Vector4(platform_.width()*0.5f, platform_.height()*0.5f - 56.0f, -0.99f),
+			1.5f,
+			0xff000000,
+			gef::TJ_CENTRE,
+			"Continue");
+
+		font_->RenderText(
+			sprite_renderer_,
+			gef::Vector4(platform_.width()*0.5f, platform_.height()*0.5f - 16.0f, -0.99f),
+			1.0f,
+			0xff000000,
+			gef::TJ_CENTRE,
+			"Options");
+
+		font_->RenderText(
+			sprite_renderer_,
+			gef::Vector4(platform_.width()*0.5f, platform_.height()*0.5f + 14.0f, -0.99f),
+			1.0f,
+			0xffffffff,
+			gef::TJ_CENTRE,
+			"Quit");
+	}
+	
 
 	sprite_renderer_->End();
 }
