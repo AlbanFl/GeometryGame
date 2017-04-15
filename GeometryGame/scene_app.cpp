@@ -803,8 +803,7 @@ void SceneApp::SetupLights()
 void SceneApp::UpdateSimulation(float frame_time)
 {
 
-	//gef::DebugOut("%.f \n", player_body_->GetLinearVelocity().x);
-	//gef::DebugOut("%.11f \n", player_body_->GetPosition().y);
+
 
 	player_body_->SetAngularVelocity(0);
 
