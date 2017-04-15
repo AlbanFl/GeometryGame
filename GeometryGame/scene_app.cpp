@@ -105,7 +105,6 @@ bool SceneApp::Update(float frame_time)
 
 		case PAUSE_SCREEN:
 		{
-			GameUpdate(frame_time);
 			PausescreenUpdate(frame_time);
 		}
 		break;
@@ -134,7 +133,6 @@ void SceneApp::Render()
 
 		case GAME_OPTIONS:
 		{
-			GameRender();
 			GameOptionsRender();
 		}
 		break;
@@ -147,7 +145,6 @@ void SceneApp::Render()
 
 		case PAUSE_SCREEN:
 		{
-			GameRender();
 			PausescreenRender();
 		}
 		break;
