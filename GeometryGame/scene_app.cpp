@@ -1572,8 +1572,8 @@ void SceneApp::FinishRender()
 		if (retry_selected == true) {
 			font_->RenderText(
 				sprite_renderer_,
-				gef::Vector4(platform_.width()*0.5f, platform_.height()*0.5f - 56.0f, -0.99f),
-				1.5f,
+				gef::Vector4(platform_.width()*0.5f, platform_.height()*0.5f - 86.0f, -0.99f),
+				1.25f,
 				0xff000000,
 				gef::TJ_CENTRE,
 				"You have lost, too bad!");
@@ -1581,7 +1581,7 @@ void SceneApp::FinishRender()
 			font_->RenderText(
 				sprite_renderer_,
 				gef::Vector4(platform_.width()*0.5f, platform_.height()*0.5f - 16.0f, -0.99f),
-				1.0f,
+				1.5f,
 				0xffffffff,
 				gef::TJ_CENTRE,
 				"RETRY");
@@ -1599,7 +1599,7 @@ void SceneApp::FinishRender()
 			font_->RenderText(
 				sprite_renderer_,
 				gef::Vector4(platform_.width()*0.5f, platform_.height()*0.5f - 56.0f, -0.99f),
-				1.5f,
+				1.25f,
 				0xff000000,
 				gef::TJ_CENTRE,
 				"You have lost, too bad!");
@@ -1615,7 +1615,7 @@ void SceneApp::FinishRender()
 			font_->RenderText(
 				sprite_renderer_,
 				gef::Vector4(platform_.width()*0.5f, platform_.height()*0.5f + 14.0f, -0.99f),
-				1.0f,
+				1.5f,
 				0xffffffff,
 				gef::TJ_CENTRE,
 				"QUIT");
@@ -1728,18 +1728,18 @@ void SceneApp::PausescreenRender()
 		font_->RenderText(
 			sprite_renderer_,
 			gef::Vector4(platform_.width()*0.5f, platform_.height()*0.5f - 56.0f, -0.99f),
-			1.5f,
+			1.0f,
 			0xff000000,
 			gef::TJ_CENTRE,
-			"Continue");
+			"CONTINUE");
 
 		font_->RenderText(
 			sprite_renderer_,
 			gef::Vector4(platform_.width()*0.5f, platform_.height()*0.5f - 16.0f, -0.99f),
-			1.0f,
+			1.5f,
 			0xffffffff,
 			gef::TJ_CENTRE,
-			"Options");
+			"OPTIONS");
 
 		font_->RenderText(
 			sprite_renderer_,
@@ -1747,14 +1747,14 @@ void SceneApp::PausescreenRender()
 			1.0f,
 			0xff000000,
 			gef::TJ_CENTRE,
-			"Quit");
+			"QUIT");
 	}
 	else if (options_selected == false && continue_selected == false)
 	{
 		font_->RenderText(
 			sprite_renderer_,
 			gef::Vector4(platform_.width()*0.5f, platform_.height()*0.5f - 56.0f, -0.99f),
-			1.5f,
+			1.0f,
 			0xff000000,
 			gef::TJ_CENTRE,
 			"Continue");
@@ -1770,7 +1770,7 @@ void SceneApp::PausescreenRender()
 		font_->RenderText(
 			sprite_renderer_,
 			gef::Vector4(platform_.width()*0.5f, platform_.height()*0.5f + 14.0f, -0.99f),
-			1.0f,
+			1.5f,
 			0xffffffff,
 			gef::TJ_CENTRE,
 			"Quit");
