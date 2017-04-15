@@ -250,6 +250,72 @@ void SceneApp::InitGround()
 	ground_3.UpdateFromSimulation(ground_body_3);
 }
 
+void SceneApp::InitTrampoline() {
+	gef::Vector4 tramp_half_dimensions(0.5f, 0.1f, 0.5f);
+	gef::Vector4 tramp_half_dimensions2(0.0f, 0.0f, 0.5f);
+	gef::Vector4 tramp_half_dimensions3(0.0f, 0.0f, 0.5f);
+
+	// setup the mesh for the ground
+	tramp_mesh_ = primitive_builder_->CreateBoxMesh(tramp_half_dimensions);
+	tramp_.set_mesh(tramp_mesh_);
+
+	tramp_mesh_2 = primitive_builder_->CreateBoxMesh(tramp_half_dimensions2);
+	tramp_2.set_mesh(tramp_mesh_2);
+
+	tramp_mesh_3 = primitive_builder_->CreateBoxMesh(tramp_half_dimensions3);
+	tramp_3.set_mesh(tramp_mesh_3);
+
+	// create a physics body
+	b2BodyDef body_def;
+	body_def.type = b2_staticBody;
+	body_def.position = b2Vec2(270.0f, -2.1f);
+
+	b2BodyDef body_def2;
+	body_def2.type = b2_staticBody;
+	body_def2.position = b2Vec2(-195.0f, -3.0f);
+
+	b2BodyDef body_def3;
+	body_def3.type = b2_staticBody;
+	body_def3.position = b2Vec2(-310.0f, -2.5f);
+
+	//create the bodies
+	tramp_body_ = world_->CreateBody(&body_def);
+	tramp_body_2 = world_->CreateBody(&body_def2);
+	tramp_body_3 = world_->CreateBody(&body_def3);
+
+	// create the shape
+	b2PolygonShape shape;
+	shape.SetAsBox(tramp_half_dimensions.x(), tramp_half_dimensions.y());
+
+	b2PolygonShape shape2;
+	shape2.SetAsBox(tramp_half_dimensions2.x(), tramp_half_dimensions2.y());
+
+	b2PolygonShape shape3;
+	shape3.SetAsBox(tramp_half_dimensions3.x(), tramp_half_dimensions3.y());
+
+	// create the fixture
+	b2FixtureDef fixture_def;
+	fixture_def.shape = &shape;
+
+	b2FixtureDef fixture_def2;
+	fixture_def2.shape = &shape2;
+
+	b2FixtureDef fixture_def3;
+	fixture_def3.shape = &shape3;
+
+	// create the fixture on the rigid body
+	tramp_body_->CreateFixture(&fixture_def);
+	tramp_body_2->CreateFixture(&fixture_def2);
+	tramp_body_3->CreateFixture(&fixture_def3);
+
+	// update visuals from simulation data
+	tramp_.UpdateFromSimulation(tramp_body_);
+	tramp_2.UpdateFromSimulation(tramp_body_2);
+	tramp_3.UpdateFromSimulation(tramp_body_3);
+
+	tramp_body_->SetUserData(&tramp_);
+}
+
 void SceneApp::InitPlatforms()
 {
 	// ground dimensions
@@ -267,7 +333,7 @@ void SceneApp::InitPlatforms()
 	gef::Vector4 plat12_dimensions(0.5f, 0.5f, 0.5f);
 	gef::Vector4 plat13_dimensions(0.5f, 0.5f, 0.5f);
 	gef::Vector4 plat14_dimensions(8.0f, 1.0f, 0.5f);
-	gef::Vector4 plat15_dimensions(0.0f, 0.0f, 0.5f);
+	gef::Vector4 plat15_dimensions(1.0f, 3.0f, 0.5f);
 	gef::Vector4 plat16_dimensions(0.0f, 0.0f, 0.5f);
 	gef::Vector4 plat17_dimensions(0.0f, 0.0f, 0.5f);
 	gef::Vector4 plat18_dimensions(0.0f, 0.0f, 0.5f);
@@ -430,11 +496,11 @@ void SceneApp::InitPlatforms()
 
 	b2BodyDef body_def_plat15;
 	body_def_plat15.type = b2_staticBody;
-	body_def_plat15.position = b2Vec2(-14.0f, 1.25f);
+	body_def_plat15.position = b2Vec2(280.0f, 1.0f);
 
 	b2BodyDef body_def_plat16;
 	body_def_plat16.type = b2_staticBody;
-	body_def_plat16.position = b2Vec2(-14.0f, 1.25f);
+	body_def_plat16.position = b2Vec2(-14.0f, 1.2f);
 
 	b2BodyDef body_def_plat17;
 	body_def_plat17.type = b2_staticBody;
@@ -803,7 +869,8 @@ void SceneApp::SetupLights()
 void SceneApp::UpdateSimulation(float frame_time)
 {
 
-
+	//gef::DebugOut("%.f \n", player_body_->GetLinearVelocity().x);
+	//gef::DebugOut("%.11f \n", player_body_->GetPosition().y);
 
 	player_body_->SetAngularVelocity(0);
 
@@ -839,6 +906,7 @@ void SceneApp::UpdateSimulation(float frame_time)
 	b2Contact* contact = world_->GetContactList();
 	// get contact count
 	int contact_count = world_->GetContactCount();
+	
 	for (int contact_num = 0; contact_num<contact_count; ++contact_num)
 	{
 		if (contact->IsTouching())
@@ -856,27 +924,21 @@ void SceneApp::UpdateSimulation(float frame_time)
 			gameObjectA = (GameObject*)bodyA->GetUserData();
 			gameObjectB = (GameObject*)bodyB->GetUserData();
 
-			if (gameObjectA)
+			if (gameObjectA != NULL && gameObjectB != NULL)
 			{
-				if (gameObjectA->type() == FINISH)
+				if (gameObjectA->type() == TRAMPOLINE && gameObjectB->type() == PLAYER)
 				{
-					
+					player_body_->SetLinearVelocity(b2Vec2(0.0f, 0.0f));
+					player_body_->ApplyLinearImpulseToCenter(b2Vec2(12.0f, 12.0f), true);
 				}
-			}
-
-			if (gameObjectB)
-			{
-				if (gameObjectB->type() == PLAYER)
+				else if (gameObjectB->type() == TRAMPOLINE && gameObjectA->type() == PLAYER)
 				{
-					player = (Player*)bodyB->GetUserData();
+					player_body_->SetLinearVelocity(b2Vec2(0.0f, 0.0f));
+					player_body_->ApplyLinearImpulseToCenter(b2Vec2(12.0f, 12.0f), true);
 				}
-			}
-
-			if (player)
-			{
-				player->DecrementHealth();
 			}
 		}
+
 		// Get next contact point
 		contact = contact->GetNext();
 
@@ -1006,6 +1068,7 @@ void SceneApp::GameInit()
 	InitPlayer();
 	InitGround();
 	InitPlatforms();
+	InitTrampoline();
 
 	// load audio assets
 	if (audio_manager_)
@@ -1042,6 +1105,15 @@ void SceneApp::GameRelease()
 
 	delete ground_mesh_3;
 	ground_mesh_3 = NULL;
+
+	delete tramp_mesh_;
+	tramp_mesh_ = NULL;
+
+	delete tramp_mesh_2;
+	tramp_mesh_2 = NULL;
+
+	delete tramp_mesh_3;
+	tramp_mesh_3 = NULL;
 
 	delete world_;
 	world_ = NULL;	
@@ -1232,7 +1304,13 @@ void SceneApp::GameRender()
 		renderer_3d_->set_override_material(&primitive_builder_->green_material());
 	}
 	renderer_3d_->DrawMesh(player_);
+	renderer_3d_->DrawMesh(tramp_);
+	renderer_3d_->DrawMesh(tramp_2);
+	renderer_3d_->DrawMesh(tramp_3);
 	renderer_3d_->set_override_material(NULL);
+
+
+
 
 	renderer_3d_->End();
 

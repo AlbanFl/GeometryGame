@@ -36,8 +36,6 @@ class Trampoline : public GameObject
 {
 public:
 	Trampoline();
-
-	
 };
 
 class Finish : public GameObject
