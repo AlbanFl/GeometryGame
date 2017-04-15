@@ -53,7 +53,7 @@
     <ProjectGuid>{A9022622-5754-4CDE-AE61-B30E59AF0222}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>gef_d3d11</RootNamespace>
-    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.14393.0</WindowsTargetPlatformVersion>
     <ProjectName>gef_d3d11</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />

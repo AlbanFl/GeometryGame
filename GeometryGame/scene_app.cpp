@@ -34,7 +34,9 @@ SceneApp::SceneApp(gef::Platform& platform) :
 	button_icon_circle(NULL),
 	is_paused(false),
 	color("RED"),
-	sound_volume_(1.0)
+	sound_volume_(1.0),
+	win(false)
+	
 {
 }
 
@@ -88,20 +90,25 @@ bool SceneApp::Update(float frame_time)
 			GameUpdate(frame_time);
 		}
 		break;
+
 		case GAME_OPTIONS:
 		{
 			GameOptionsUpdate(frame_time);
 		}
 		break;
+
 		case FINISH_SCREEN:
 		{
 			FinishUpdate(frame_time);
 		}
 		break;
+
 		case PAUSE_SCREEN:
 		{
+			GameUpdate(frame_time);
 			PausescreenUpdate(frame_time);
 		}
+		break;
 	}
 	return true;
 }
@@ -124,18 +131,22 @@ void SceneApp::Render()
 			GameRender();
 		}
 		break;
+
 		case GAME_OPTIONS:
 		{
 			GameOptionsRender();
 		}
 		break;
+
 		case FINISH_SCREEN:
 		{
 			FinishRender();
 		}
 		break;
+
 		case PAUSE_SCREEN:
 		{
+			GameRender();
 			PausescreenRender();
 		}
 		break;
@@ -859,6 +870,7 @@ void SceneApp::UpdateSimulation(float frame_time)
 {
 	//gef::DebugOut("%.f \n", player_body_->GetLinearVelocity().x);
 	//gef::DebugOut("%.11f \n", player_body_->GetPosition().y);
+
 	player_body_->SetAngularVelocity(0);
 
 
@@ -1473,18 +1485,142 @@ void SceneApp::GameOptionsRender()
 
 void SceneApp::FinishInit()
 {
+	button_icon_cross = CreateTextureFromPNG("playstation-cross-dark-icon.png", platform_);
+	retry_selected = true;
 }
 
 void SceneApp::FinishRelease()
 {
+	delete button_icon_circle;
+	button_icon_circle = NULL;
+
+	win = false;
 }
 
 void SceneApp::FinishUpdate(float frame_time)
 {
+	const gef::SonyController* controller = input_manager_->controller_input()->GetController(0);
+	gef::Keyboard* keyboard = input_manager_->keyboard();
+	if (win == false) {
+		if (controller->buttons_pressed() && gef_SONY_CTRL_DOWN && retry_selected == true || (keyboard->IsKeyPressed(gef::Keyboard::KC_DOWN)) && retry_selected == true)
+		{
+			retry_selected = false;
+		}
+
+		if (controller->buttons_pressed() && gef_SONY_CTRL_UP & retry_selected == false || (keyboard->IsKeyPressed(gef::Keyboard::KC_UP)) && retry_selected == false)
+		{
+			retry_selected = true;
+
+		}
+	}
+
+	if (controller->buttons_pressed() && gef_SONY_CTRL_CROSS || (keyboard->IsKeyPressed(gef::Keyboard::KC_X)))
+	{
+		if (win == true)
+		{
+			FinishRelease();
+			game_state_ = FRONTEND;
+			FrontendInit();
+		}
+		else {
+			if (retry_selected == true) {
+
+				FinishRelease();
+				game_state_ = PLAY_GAME;
+				GameInit();
+			}
+			else {
+				FinishRelease();
+				game_state_ = FRONTEND;
+				FrontendInit();
+			}
+		}
+	}
+
 }
 
 void SceneApp::FinishRender()
 {
+	if (win == true)
+	{
+		font_->RenderText(
+			sprite_renderer_,
+			gef::Vector4(platform_.width()*0.5f, platform_.height()*0.5f - 56.0f, -0.99f),
+			1.5f,
+			0xffffffff,
+			gef::TJ_CENTRE,
+			"You have reached the finish line, congratulations!" );
+
+		gef::Sprite button_continue;
+		button_continue.set_texture(button_icon_cross);
+		button_continue.set_position(gef::Vector4(platform_.width()*0.5f + 200.0f, platform_.height()*0.5f + 170.0f, -0.99f));
+		button_continue.set_height(32.0f);
+		button_continue.set_width(32.0f);
+		sprite_renderer_->DrawSprite(button_continue);
+
+		font_->RenderText(
+			sprite_renderer_,
+			gef::Vector4(platform_.width()*0.5f + 250.0f, platform_.height()*0.5f + 150.0f, -0.99f),
+			1.0f,
+			0xffffffff,
+			gef::TJ_CENTRE,
+			"Continue");
+	}
+	else {
+		if (retry_selected == true) {
+			font_->RenderText(
+				sprite_renderer_,
+				gef::Vector4(platform_.width()*0.5f, platform_.height()*0.5f - 56.0f, -0.99f),
+				1.5f,
+				0xff000000,
+				gef::TJ_CENTRE,
+				"You have lost, too bad!");
+
+			font_->RenderText(
+				sprite_renderer_,
+				gef::Vector4(platform_.width()*0.5f, platform_.height()*0.5f - 16.0f, -0.99f),
+				1.0f,
+				0xffffffff,
+				gef::TJ_CENTRE,
+				"RETRY");
+
+			font_->RenderText(
+				sprite_renderer_,
+				gef::Vector4(platform_.width()*0.5f, platform_.height()*0.5f +14.0f, -0.99f),
+				1.0f,
+				0xff000000,
+				gef::TJ_CENTRE,
+				"QUIT");
+		}
+		else {
+
+			font_->RenderText(
+				sprite_renderer_,
+				gef::Vector4(platform_.width()*0.5f, platform_.height()*0.5f - 56.0f, -0.99f),
+				1.5f,
+				0xffffffff,
+				gef::TJ_CENTRE,
+				"You have lost, too bad!");
+
+			font_->RenderText(
+				sprite_renderer_,
+				gef::Vector4(platform_.width()*0.5f, platform_.height()*0.5f - 16.0f, -0.99f),
+				1.0f,
+				0xff000000,
+				gef::TJ_CENTRE,
+				"RETRY");
+
+			font_->RenderText(
+				sprite_renderer_,
+				gef::Vector4(platform_.width()*0.5f, platform_.height()*0.5f + 14.0f, -0.99f),
+				1.0f,
+				0xff000000,
+				gef::TJ_CENTRE,
+				"QUIT");
+
+		}
+
+	}
 }
 
 void SceneApp::PausescreenInit()
@@ -1536,6 +1672,7 @@ void SceneApp::PausescreenUpdate(float frame_time)
 			is_paused = false;
 		}
 		else if (options_selected == true) {
+
 			game_state_ = GAME_OPTIONS;
 			GameOptionsInit();
 		}

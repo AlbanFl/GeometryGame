@@ -233,7 +233,10 @@ private:
 	bool is_paused;
 	bool continue_selected;
 	bool options_selected;
+	bool retry_selected;
 	float fps_;
+	bool win;
+
 	
 
 	char* color;
