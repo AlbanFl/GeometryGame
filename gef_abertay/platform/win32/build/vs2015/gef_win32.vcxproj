@@ -33,7 +33,7 @@
     <ProjectGuid>{E00EF4BF-28FD-49CD-A3F2-B1FBC4EC9B65}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>gef_win32</RootNamespace>
-    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.14393.0</WindowsTargetPlatformVersion>
     <ProjectName>gef_win32</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
