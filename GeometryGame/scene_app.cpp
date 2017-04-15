@@ -134,6 +134,7 @@ void SceneApp::Render()
 
 		case GAME_OPTIONS:
 		{
+			GameRender();
 			GameOptionsRender();
 		}
 		break;
