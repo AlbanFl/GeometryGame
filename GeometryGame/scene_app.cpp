@@ -1708,7 +1708,7 @@ void SceneApp::PausescreenRender()
 			1.5f,
 			0xffffffff,
 			gef::TJ_CENTRE,
-			"Continue");
+			"CONTINUE");
 
 
 		font_->RenderText(
@@ -1717,7 +1717,7 @@ void SceneApp::PausescreenRender()
 			1.0f,
 			0xff000000,
 			gef::TJ_CENTRE,
-			"Options");
+			"OPTIONS");
 
 		font_->RenderText(
 			sprite_renderer_,
@@ -1725,7 +1725,7 @@ void SceneApp::PausescreenRender()
 			1.0f,
 			0xff000000,
 			gef::TJ_CENTRE,
-			"Quit");
+			"QUIT");
 
 	}
 	else if(options_selected == true) {
@@ -1762,7 +1762,7 @@ void SceneApp::PausescreenRender()
 			1.0f,
 			0xff000000,
 			gef::TJ_CENTRE,
-			"Continue");
+			"CONTINUE");
 
 		font_->RenderText(
 			sprite_renderer_,
@@ -1770,7 +1770,7 @@ void SceneApp::PausescreenRender()
 			1.0f,
 			0xff000000,
 			gef::TJ_CENTRE,
-			"Options");
+			"OPTIONS");
 
 		font_->RenderText(
 			sprite_renderer_,
@@ -1778,7 +1778,7 @@ void SceneApp::PausescreenRender()
 			1.5f,
 			0xffffffff,
 			gef::TJ_CENTRE,
-			"Quit");
+			"QUIT");
 	}
 	
 
