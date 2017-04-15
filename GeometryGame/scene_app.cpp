@@ -15,7 +15,7 @@
 #include <animation/skeleton.h>
 #include <animation/animation.h>
 #include <input/keyboard.h>
-#include <math.h>
+//#include <math.h>
 
 SceneApp::SceneApp(gef::Platform& platform) :
 	Application(platform),
@@ -907,6 +907,11 @@ void SceneApp::UpdateSimulation(float frame_time)
 	// get contact count
 	int contact_count = world_->GetContactCount();
 	
+	if (player_body_->GetPosition().y < -8) {
+		game_state_ = FINISH_SCREEN;
+		FinishInit();
+	}
+
 	for (int contact_num = 0; contact_num<contact_count; ++contact_num)
 	{
 		if (contact->IsTouching())
