@@ -15,9 +15,9 @@
 
 enum GAMESTATE 
 {
-	INTRO,
 	PLAY_GAME,
-	FRONTEND
+	FRONTEND,
+	GAME_OPTIONS,
 };
 
 
@@ -56,8 +56,9 @@ private:
 	//
 	// FRONTEND DECLARATIONS
 	//
-	gef::Texture* button_icon_;
-
+	gef::Texture* button_icon_cross;
+	gef::Texture* button_icon_circle;
+	gef::Texture* button_icon_square;
 	//
 	// GAME DECLARATIONS
 	//
@@ -76,11 +77,18 @@ private:
 	GameObject ground_;
 	b2Body* ground_body_;
 
-	// audio variables
+	// Audio variables
 	int sfx_id_;
 	int sfx_voice_id_;
+	float sound_volume_;
 
+	// Menu Variables
+	bool start_selected;
+	bool sound_selected;
+	bool is_paused;
 	float fps_;
+
+	char* color;
 
 	void FrontendInit();
 	void FrontendRelease();
@@ -91,6 +99,14 @@ private:
 	void GameRelease();
 	void GameUpdate(float frame_time);
 	void GameRender();
+
+	void GameOptionsInit();
+	void GameOptionsRelease();
+	void GameOptionsUpdate(float frame_time);
+	void GameOptionsRender();
+
+	// audio update function
+	void UpdateAudio(float frame_time);
 
 	float camera_pos;
 };

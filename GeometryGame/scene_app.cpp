@@ -28,7 +28,12 @@ SceneApp::SceneApp(gef::Platform& platform) :
 	player_body_(NULL),
 	sfx_id_(-1),
 	sfx_voice_id_(-1),
-	button_icon_(NULL)
+	button_icon_cross(NULL),
+	button_icon_square(NULL),
+	button_icon_circle(NULL),
+	is_paused(false),
+	color("RED"),
+	sound_volume_(1.0)
 {
 }
 
@@ -82,6 +87,11 @@ bool SceneApp::Update(float frame_time)
 			GameUpdate(frame_time);
 		}
 		break;
+		case GAME_OPTIONS:
+		{
+			GameOptionsUpdate(frame_time);
+		}
+		break;
 	}
 	return true;
 }
@@ -103,6 +113,12 @@ void SceneApp::Render()
 		{
 			GameRender();
 		}
+		break;
+		case GAME_OPTIONS:
+		{
+			GameOptionsRender();
+		}
+		break;
 	}
 }
 
@@ -227,7 +243,6 @@ void SceneApp::UpdateSimulation(float frame_time)
 	b2Contact* contact = world_->GetContactList();
 	// get contact count
 	int contact_count = world_->GetContactCount();
-
 	for (int contact_num = 0; contact_num<contact_count; ++contact_num)
 	{
 		if (contact->IsTouching())
@@ -270,7 +285,7 @@ void SceneApp::UpdateSimulation(float frame_time)
 		const gef::SonyController* controller = input_manager_->controller_input()->GetController(0);
 		gef::Keyboard* keyboard = input_manager_->keyboard();
 
-		if (controller->buttons_pressed() && gef_SONY_CTRL_CROSS || (keyboard->IsKeyDown(gef::Keyboard::KC_X))) {
+		if (controller->buttons_pressed() && gef_SONY_CTRL_CROSS || (keyboard->IsKeyPressed(gef::Keyboard::KC_X))) {
 			player_body_->ApplyLinearImpulse(b2Vec2(0.0f, 1.0f), player_body_->GetPosition(), true);
 		}
 
@@ -282,13 +297,14 @@ void SceneApp::UpdateSimulation(float frame_time)
 
 void SceneApp::FrontendInit()
 {
-	button_icon_ = CreateTextureFromPNG("playstation-cross-dark-icon.png", platform_);
+	button_icon_cross = CreateTextureFromPNG("playstation-cross-dark-icon.png", platform_);
+	start_selected = true;
 }
 
 void SceneApp::FrontendRelease()
 {
-	delete button_icon_;
-	button_icon_ = NULL;
+	delete button_icon_cross;
+	button_icon_cross = NULL;
 }
 
 void SceneApp::FrontendUpdate(float frame_time)
@@ -296,11 +312,33 @@ void SceneApp::FrontendUpdate(float frame_time)
 	const gef::SonyController* controller = input_manager_->controller_input()->GetController(0);
 	gef::Keyboard* keyboard = input_manager_->keyboard();
 
-	if (controller->buttons_pressed() && gef_SONY_CTRL_CROSS || (keyboard->IsKeyDown(gef::Keyboard::KC_X)))
+	if (controller->buttons_pressed() && gef_SONY_CTRL_CROSS || (keyboard->IsKeyPressed(gef::Keyboard::KC_X)))
+	{	
+		if (start_selected == true )
+		{
+			FrontendRelease();
+			game_state_ = PLAY_GAME;
+			GameInit();
+		}
+		else {
+			FrontendRelease();
+			game_state_ = GAME_OPTIONS;
+			GameOptionsInit();
+		}
+	}
+
+
+
+
+	if (controller->buttons_pressed() && gef_SONY_CTRL_DOWN && start_selected == true || (keyboard->IsKeyPressed(gef::Keyboard::KC_DOWN)) && start_selected == true)
 	{
-		FrontendRelease();
-		game_state_ = PLAY_GAME;
-		GameInit();
+		start_selected = false;
+	}
+
+	if (controller->buttons_pressed() && gef_SONY_CTRL_UP & start_selected == false || (keyboard->IsKeyPressed(gef::Keyboard::KC_UP)) && start_selected == false)
+	{
+		start_selected = true;
+	
 	}
 }
 
@@ -308,32 +346,44 @@ void SceneApp::FrontendRender()
 {
 	sprite_renderer_->Begin();
 
-	// render "PRESS" text
+	if (start_selected == true) {
+	// render selected START THE GAME
 	font_->RenderText(
 		sprite_renderer_,
 		gef::Vector4(platform_.width()*0.5f, platform_.height()*0.5f - 56.0f, -0.99f),
-		1.0f,
+		1.5f,
 		0xffffffff,
 		gef::TJ_CENTRE,
-		"PRESS");
+		"START THE GAME");
 
-	// Render button icon
-	gef::Sprite button;
-	button.set_texture(button_icon_);
-	button.set_position(gef::Vector4(platform_.width()*0.5f, platform_.height()*0.5f, -0.99f));
-	button.set_height(32.0f);
-	button.set_width(32.0f);
-	sprite_renderer_->DrawSprite(button);
-
-
-	// render "TO START" text
+	// render unselected OPTIONS
 	font_->RenderText(
 		sprite_renderer_,
 		gef::Vector4(platform_.width()*0.5f, platform_.height()*0.5f + 32.0f, -0.99f),
 		1.0f,
-		0xffffffff,
+		0xff000000,
 		gef::TJ_CENTRE,
-		"TO START");
+		"OPTIONS");
+	}
+	else{
+			// render unselected START THE GAME
+			font_->RenderText(
+				sprite_renderer_,
+				gef::Vector4(platform_.width()*0.5f, platform_.height()*0.5f - 56.0f, -0.99f),
+				1.0f,
+				0xff000000,
+				gef::TJ_CENTRE,
+				"START THE GAME");
+
+			// render selected OPTIONS
+			font_->RenderText(
+				sprite_renderer_,
+				gef::Vector4(platform_.width()*0.5f, platform_.height()*0.5f + 32.0f, -0.99f),
+				1.5f,
+				0xffffffff,
+				gef::TJ_CENTRE,
+				"OPTIONS");
+		}
 
 
 	DrawHUD();
@@ -443,7 +493,17 @@ void SceneApp::GameRender()
 	renderer_3d_->DrawMesh(ground_);
 
 	// draw player
-	renderer_3d_->set_override_material(&primitive_builder_->red_material());
+	if(color == "RED"){
+		renderer_3d_->set_override_material(&primitive_builder_->red_material());
+	}
+	if (color == "BLUE")
+	{
+		renderer_3d_->set_override_material(&primitive_builder_->blue_material());
+	}
+	if (color == "GREEN")
+	{
+		renderer_3d_->set_override_material(&primitive_builder_->green_material());
+	}
 	renderer_3d_->DrawMesh(player_);
 	renderer_3d_->set_override_material(NULL);
 
@@ -452,5 +512,175 @@ void SceneApp::GameRender()
 	// start drawing sprites, but don't clear the frame buffer
 	sprite_renderer_->Begin(false);
 	DrawHUD();
+	sprite_renderer_->End();
+}
+
+void SceneApp::GameOptionsInit()
+{
+	button_icon_circle = CreateTextureFromPNG("playstation-circle-dark-icon.png", platform_);
+	sound_selected = true;
+}
+
+void SceneApp::GameOptionsRelease()
+{
+	delete button_icon_circle;
+	button_icon_circle = NULL;
+}
+
+void SceneApp::GameOptionsUpdate(float frame_time)
+{
+	const gef::SonyController* controller = input_manager_->controller_input()->GetController(0);
+	gef::Keyboard* keyboard = input_manager_->keyboard();
+
+	if (controller->buttons_pressed() & gef_SONY_CTRL_CIRCLE || (keyboard->IsKeyPressed(gef::Keyboard::KC_B))) {
+		if (is_paused == false)
+		{
+			GameOptionsRelease();
+			game_state_ = FRONTEND;
+			FrontendInit();
+		}
+		/*if (is_paused == true)
+		{
+			GameOptionsRelease();
+			game_state_ = PAUSE;
+			PauseInit();
+		}*/
+	}
+
+	if (sound_selected == true) {
+		if (sound_volume_ >= 0.0f & sound_volume_ <= 1.0f)
+		{
+			if (controller->buttons_pressed() & gef_SONY_CTRL_RIGHT || (keyboard->IsKeyPressed(gef::Keyboard::KC_RIGHT)))
+			{
+				sound_volume_ = sound_volume_ + 0.1;
+				GameOptionsRender();
+				//UpdateAudio(frame_time);
+			}
+
+			if (controller->buttons_pressed() & gef_SONY_CTRL_LEFT || (keyboard->IsKeyPressed(gef::Keyboard::KC_LEFT)))
+			{
+				sound_volume_ = sound_volume_ - 0.1;
+				GameOptionsRender();
+				//UpdateAudio(frame_time);
+
+			}
+		}
+		else if (sound_volume_ > 1.0f)
+		{
+			sound_volume_ = 1.0f;
+			GameOptionsRender();
+			//UpdateAudio(frame_time);
+		}
+		else if (sound_volume_ < 0.0f)
+		{
+			sound_volume_ = 0.0f;
+			GameOptionsRender();
+			//UpdateAudio(frame_time);
+		}
+	}
+	else {
+
+		if (controller->buttons_pressed() && gef_SONY_CTRL_LEFT && color == "RED" || (keyboard->IsKeyPressed(gef::Keyboard::KC_LEFT)) && color == "RED")
+		{
+			color = "GREEN";
+			GameOptionsRender();
+		}
+		else if (controller->buttons_pressed() && gef_SONY_CTRL_LEFT && color == "GREEN" || (keyboard->IsKeyPressed(gef::Keyboard::KC_LEFT)) && color == "GREEN")
+		{
+			color = "BLUE";
+			GameOptionsRender();
+		}
+		else if (controller->buttons_pressed() && gef_SONY_CTRL_LEFT && color == "BLUE" || (keyboard->IsKeyPressed(gef::Keyboard::KC_LEFT)) && color == "BLUE")
+		{
+			color = "RED";
+			GameOptionsRender();
+		}
+
+		if (controller->buttons_pressed() && gef_SONY_CTRL_RIGHT && color == "RED" || (keyboard->IsKeyPressed(gef::Keyboard::KC_RIGHT)) && color == "RED")
+		{
+			color = "BLUE";
+			GameOptionsRender();
+		}
+		else if (controller->buttons_pressed() && gef_SONY_CTRL_RIGHT && color == "BLUE" || (keyboard->IsKeyPressed(gef::Keyboard::KC_RIGHT)) && color == "BLUE")
+		{
+			color = "GREEN";
+			GameOptionsRender();
+		}
+		else if (controller->buttons_pressed() && gef_SONY_CTRL_RIGHT && color == "GREEN" || (keyboard->IsKeyPressed(gef::Keyboard::KC_RIGHT)) && color == "GREEN")
+		{
+			color = "RED";
+			GameOptionsRender();
+		}
+	}
+
+	if (controller->buttons_pressed() && gef_SONY_CTRL_DOWN && sound_selected == true || (keyboard->IsKeyPressed(gef::Keyboard::KC_DOWN)) && sound_selected == true)
+	{
+		sound_selected = false;
+	}
+
+	if (controller->buttons_pressed() && gef_SONY_CTRL_UP & sound_selected == false || (keyboard->IsKeyPressed(gef::Keyboard::KC_UP)) && sound_selected == false)
+	{
+		sound_selected = true;
+
+	}
+}
+
+void SceneApp::GameOptionsRender()
+{
+	sprite_renderer_->Begin();
+	if (sound_selected == true) {
+
+
+		font_->RenderText(
+			sprite_renderer_,
+			gef::Vector4(platform_.width()*0.5f, platform_.height()*0.5f - 56.0f, -0.99f),
+			1.5f,
+			0xffffffff,
+			gef::TJ_CENTRE,
+			"SOUND : %.0f", sound_volume_ * 10);
+
+
+		font_->RenderText(
+			sprite_renderer_,
+			gef::Vector4(platform_.width()*0.5f, platform_.height()*0.5f - 16.0f, -0.99f),
+			1.0f,
+			0xff000000,
+			gef::TJ_CENTRE,
+			"CUBE COLOR: %s", color);
+	}
+	else {
+		font_->RenderText(
+			sprite_renderer_,
+			gef::Vector4(platform_.width()*0.5f, platform_.height()*0.5f - 56.0f, -0.99f),
+			1.0f,
+			0xff000000,
+			gef::TJ_CENTRE,
+			"SOUND : %.0f", sound_volume_ * 10);
+
+		font_->RenderText(
+			sprite_renderer_,
+			gef::Vector4(platform_.width()*0.5f, platform_.height()*0.5f - 16.0f, -0.99f),
+			1.5f,
+			0xffffffff,
+			gef::TJ_CENTRE,
+			"CUBE COLOR: %s", color);
+	}
+
+	//render circle icon
+	gef::Sprite button_back;
+	button_back.set_texture(button_icon_circle);
+	button_back.set_position(gef::Vector4(platform_.width()*0.5f + 200.0f, platform_.height()*0.5f + 170.0f, -0.99f));
+	button_back.set_height(32.0f);
+	button_back.set_width(32.0f);
+	sprite_renderer_->DrawSprite(button_back);
+
+	font_->RenderText(
+		sprite_renderer_,
+		gef::Vector4(platform_.width()*0.5f + 250.0f, platform_.height()*0.5f + 150.0f, -0.99f),
+		1.0f,
+		0xffffffff,
+		gef::TJ_CENTRE,
+		"BACK");
+
 	sprite_renderer_->End();
 }
