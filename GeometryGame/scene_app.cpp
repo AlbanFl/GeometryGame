@@ -1599,7 +1599,7 @@ void SceneApp::FinishRender()
 				sprite_renderer_,
 				gef::Vector4(platform_.width()*0.5f, platform_.height()*0.5f - 56.0f, -0.99f),
 				1.5f,
-				0xffffffff,
+				0xff000000,
 				gef::TJ_CENTRE,
 				"You have lost, too bad!");
 
@@ -1615,7 +1615,7 @@ void SceneApp::FinishRender()
 				sprite_renderer_,
 				gef::Vector4(platform_.width()*0.5f, platform_.height()*0.5f + 14.0f, -0.99f),
 				1.0f,
-				0xff000000,
+				0xffffffff,
 				gef::TJ_CENTRE,
 				"QUIT");
 
