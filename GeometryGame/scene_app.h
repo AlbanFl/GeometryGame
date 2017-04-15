@@ -74,8 +74,13 @@ private:
 
 	// ground variables
 	gef::Mesh* ground_mesh_;
+	gef::Mesh* ground_mesh_2;
+
 	GameObject ground_;
+	GameObject ground_2;
+
 	b2Body* ground_body_;
+	b2Body* ground_body_2;
 
 	// Audio variables
 	int sfx_id_;
@@ -109,6 +114,8 @@ private:
 	void UpdateAudio(float frame_time);
 
 	float camera_pos;
+	float game_speed;
+
 };
 
 #endif // _SCENE_APP_H

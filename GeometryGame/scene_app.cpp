@@ -15,6 +15,7 @@
 #include <animation/skeleton.h>
 #include <animation/animation.h>
 #include <input/keyboard.h>
+#include <math.h>
 
 SceneApp::SceneApp(gef::Platform& platform) :
 	Application(platform),
@@ -158,30 +159,46 @@ void SceneApp::InitGround()
 	// ground dimensions
 	gef::Vector4 ground_half_dimensions(100.0f, 0.5f, 0.5f);
 
+	gef::Vector4 ground_half_dimensions2(100.0f, 0.5f, 0.5f);
 	// setup the mesh for the ground
 	ground_mesh_ = primitive_builder_->CreateBoxMesh(ground_half_dimensions);
 	ground_.set_mesh(ground_mesh_);
 
+	ground_mesh_2 = primitive_builder_->CreateBoxMesh(ground_half_dimensions2);
+	ground_2.set_mesh(ground_mesh_2);
 	// create a physics body
 	b2BodyDef body_def;
 	body_def.type = b2_staticBody;
 	body_def.position = b2Vec2(0.0f, 0.0f);
 
+	b2BodyDef body_def2;
+	body_def2.type = b2_staticBody;
+	body_def2.position = b2Vec2(300.0f, 0.0f);
+
 	ground_body_ = world_->CreateBody(&body_def);
+	ground_body_2 = world_->CreateBody(&body_def2);
 
 	// create the shape
 	b2PolygonShape shape;
 	shape.SetAsBox(ground_half_dimensions.x(), ground_half_dimensions.y());
 
+	b2PolygonShape shape2;
+	shape2.SetAsBox(ground_half_dimensions2.x(), ground_half_dimensions2.y());
+
 	// create the fixture
 	b2FixtureDef fixture_def;
 	fixture_def.shape = &shape;
 
+	b2FixtureDef fixture_def2;
+	fixture_def2.shape = &shape2;
+
 	// create the fixture on the rigid body
 	ground_body_->CreateFixture(&fixture_def);
+	ground_body_2->CreateFixture(&fixture_def2);
 
 	// update visuals from simulation data
 	ground_.UpdateFromSimulation(ground_body_);
+	ground_2.UpdateFromSimulation(ground_body_2);
 }
 
 
@@ -224,8 +241,17 @@ void SceneApp::SetupLights()
 
 void SceneApp::UpdateSimulation(float frame_time)
 {
+	gef::DebugOut("%.f \n", player_body_->GetLinearVelocity().x);
+
+
+	game_speed += 0.05;
+
+	player_body_->ApplyLinearImpulseToCenter(b2Vec2(0.05f, 0.0f), true);
+
+	camera_pos = player_body_->GetPosition().x;
 	camera_pos = player_body_->GetPosition().x;
 	// update physics world
+
 	float32 timeStep = 1.0f / 60.0f;
 
 	int32 velocityIterations = 6;
@@ -281,17 +307,15 @@ void SceneApp::UpdateSimulation(float frame_time)
 				player->DecrementHealth();
 			}
 		}
+		// Get next contact point
+		contact = contact->GetNext();
 
 		const gef::SonyController* controller = input_manager_->controller_input()->GetController(0);
 		gef::Keyboard* keyboard = input_manager_->keyboard();
 
-		if (controller->buttons_pressed() && gef_SONY_CTRL_CROSS || (keyboard->IsKeyPressed(gef::Keyboard::KC_X))) {
+		if (controller->buttons_pressed() && gef_SONY_CTRL_CROSS || (keyboard->IsKeyDown(gef::Keyboard::KC_X))) {
 			player_body_->ApplyLinearImpulse(b2Vec2(0.0f, 1.0f), player_body_->GetPosition(), true);
 		}
-
-
-		// Get next contact point
-		contact = contact->GetNext();
 	}
 }
 
@@ -392,7 +416,10 @@ void SceneApp::FrontendRender()
 
 void SceneApp::GameInit()
 {
+
+	game_speed = 1;
 	camera_pos = 0;
+
 	// create the renderer for draw 3D geometry
 	renderer_3d_ = gef::Renderer3D::Create(platform_);
 
@@ -403,7 +430,7 @@ void SceneApp::GameInit()
 	SetupLights();
 
 	// initialise the physics world
-	b2Vec2 gravity(5.0f, -9.81f);
+	b2Vec2 gravity(0.0f, -9.81f);
 	world_ = new b2World(gravity);
 
 	InitPlayer();
@@ -425,6 +452,7 @@ void SceneApp::GameInit()
 
 void SceneApp::GameRelease()
 {
+	
 	// unload audio resources
 	if (audio_manager_)
 	{
@@ -435,6 +463,9 @@ void SceneApp::GameRelease()
 	}
 
 	// destroying the physics world also destroys all the objects within it
+	delete ground_mesh_2;
+	ground_mesh_2 = NULL;
+
 	delete world_;
 	world_ = NULL;
 
@@ -506,6 +537,7 @@ void SceneApp::GameRender()
 	}
 	renderer_3d_->DrawMesh(player_);
 	renderer_3d_->set_override_material(NULL);
+	renderer_3d_->DrawMesh(ground_2);
 
 	renderer_3d_->End();
 
