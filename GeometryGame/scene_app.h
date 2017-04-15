@@ -42,6 +42,7 @@ private:
 	void InitPlayer();
 	void InitGround();
 	void InitFont();
+	void InitPlatforms();
 	void CleanUpFont();
 	void DrawHUD();
 	void SetupLights();
@@ -82,6 +83,47 @@ private:
 	b2Body* ground_body_;
 	b2Body* ground_body_2;
 
+	//platforms variables
+	gef::Mesh* plat1_mesh_;
+	GameObject plat1;
+	b2Body* plat1_body_;
+
+	gef::Mesh* plat2_mesh_;
+	GameObject plat2;
+	b2Body* plat2_body_;
+
+	gef::Mesh* plat3_mesh_;
+	GameObject plat3;
+	b2Body* plat3_body_;
+
+	gef::Mesh* plat4_mesh_;
+	GameObject plat4;
+	b2Body* plat4_body_;
+
+	gef::Mesh* plat5_mesh_;
+	GameObject plat5;
+	b2Body* plat5_body_;
+
+	gef::Mesh* plat6_mesh_;
+	GameObject plat6;
+	b2Body* plat6_body_;
+
+	gef::Mesh* plat7_mesh_;
+	GameObject plat7;
+	b2Body* plat7_body_;
+
+	gef::Mesh* plat8_mesh_;
+	GameObject plat8;
+	b2Body* plat8_body_;
+
+	gef::Mesh* plat9_mesh_;
+	GameObject plat9;
+	b2Body* plat9_body_;
+
+	gef::Mesh* plat10_mesh_;
+	GameObject plat10;
+	b2Body* plat10_body_;
+
 	// Audio variables
 	int sfx_id_;
 	int sfx_voice_id_;
@@ -112,6 +154,7 @@ private:
 
 	// audio update function
 	void UpdateAudio(float frame_time);
+	int arrondi(float nombre);
 
 	float camera_pos;
 	float game_speed;

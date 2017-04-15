@@ -157,24 +157,26 @@ void SceneApp::InitPlayer()
 void SceneApp::InitGround()
 {
 	// ground dimensions
-	gef::Vector4 ground_half_dimensions(100.0f, 0.5f, 0.5f);
-
+	gef::Vector4 ground_half_dimensions(70.0f, 0.5f, 0.5f);
 	gef::Vector4 ground_half_dimensions2(100.0f, 0.5f, 0.5f);
+
 	// setup the mesh for the ground
 	ground_mesh_ = primitive_builder_->CreateBoxMesh(ground_half_dimensions);
 	ground_.set_mesh(ground_mesh_);
 
 	ground_mesh_2 = primitive_builder_->CreateBoxMesh(ground_half_dimensions2);
 	ground_2.set_mesh(ground_mesh_2);
+
 	// create a physics body
 	b2BodyDef body_def;
 	body_def.type = b2_staticBody;
-	body_def.position = b2Vec2(0.0f, 0.0f);
+	body_def.position = b2Vec2(60.0f, 0.0f);
 
 	b2BodyDef body_def2;
 	body_def2.type = b2_staticBody;
-	body_def2.position = b2Vec2(300.0f, 0.0f);
+	body_def2.position = b2Vec2(250.0f, -3.0f);
 
+	//create the bodies
 	ground_body_ = world_->CreateBody(&body_def);
 	ground_body_2 = world_->CreateBody(&body_def2);
 
@@ -199,6 +201,191 @@ void SceneApp::InitGround()
 	// update visuals from simulation data
 	ground_.UpdateFromSimulation(ground_body_);
 	ground_2.UpdateFromSimulation(ground_body_2);
+}
+
+void SceneApp::InitPlatforms()
+{
+	// ground dimensions
+	gef::Vector4 plat1_dimensions(0.5f, 0.5f, 0.5f);
+	gef::Vector4 plat2_dimensions(0.5f, 1.0f, 0.5f);
+	gef::Vector4 plat3_dimensions(0.5f, 0.5f, 0.5f);
+	gef::Vector4 plat4_dimensions(4.0f, 1.5f, 0.5f);
+	gef::Vector4 plat5_dimensions(0.5f, 2.0f, 0.5f);
+	gef::Vector4 plat6_dimensions(0.5f, 1.5f, 0.5f);
+	gef::Vector4 plat7_dimensions(0.5f, 1.0f, 0.5f);
+	gef::Vector4 plat8_dimensions(10.0f, 1.0f, 0.5f);
+	gef::Vector4 plat9_dimensions(5.0f, 1.0f, 0.5f);
+	gef::Vector4 plat10_dimensions(1.0f, 1.5f, 0.5f);
+
+	// setup the mesh for the ground
+	plat1_mesh_ = primitive_builder_->CreateBoxMesh(plat1_dimensions);
+	plat1.set_mesh(plat1_mesh_);
+
+	plat2_mesh_ = primitive_builder_->CreateBoxMesh(plat2_dimensions);
+	plat2.set_mesh(plat2_mesh_);
+
+	plat3_mesh_ = primitive_builder_->CreateBoxMesh(plat3_dimensions);
+	plat3.set_mesh(plat3_mesh_);
+
+	plat4_mesh_ = primitive_builder_->CreateBoxMesh(plat4_dimensions);
+	plat4.set_mesh(plat4_mesh_);
+
+	plat5_mesh_ = primitive_builder_->CreateBoxMesh(plat5_dimensions);
+	plat5.set_mesh(plat5_mesh_);
+
+	plat6_mesh_ = primitive_builder_->CreateBoxMesh(plat6_dimensions);
+	plat6.set_mesh(plat6_mesh_);
+
+	plat7_mesh_ = primitive_builder_->CreateBoxMesh(plat7_dimensions);
+	plat7.set_mesh(plat7_mesh_);
+
+	plat8_mesh_ = primitive_builder_->CreateBoxMesh(plat8_dimensions);
+	plat8.set_mesh(plat8_mesh_);
+
+	plat9_mesh_ = primitive_builder_->CreateBoxMesh(plat9_dimensions);
+	plat9.set_mesh(plat9_mesh_);
+
+	plat10_mesh_ = primitive_builder_->CreateBoxMesh(plat10_dimensions);
+	plat10.set_mesh(plat10_mesh_);
+
+	// create a physics body
+	b2BodyDef body_def_plat1;
+	body_def_plat1.type = b2_staticBody;
+	body_def_plat1.position = b2Vec2(8.0f, 1.0f);
+
+	b2BodyDef body_def_plat2;
+	body_def_plat2.type = b2_staticBody;
+	body_def_plat2.position = b2Vec2(18.0f, 1.0f);
+
+	b2BodyDef body_def_plat3;
+	body_def_plat3.type = b2_staticBody;
+	body_def_plat3.position = b2Vec2(25.0f, 2.5f);
+
+	b2BodyDef body_def_plat4;
+	body_def_plat4.type = b2_staticBody;
+	body_def_plat4.position = b2Vec2(40.0f, 1.0f);
+
+	b2BodyDef body_def_plat5;
+	body_def_plat5.type = b2_staticBody;
+	body_def_plat5.position = b2Vec2(50.0f, 2.5f);
+
+	b2BodyDef body_def_plat6;
+	body_def_plat6.type = b2_staticBody;
+	body_def_plat6.position = b2Vec2(56.0f, 3.5f);
+
+	b2BodyDef body_def_plat7;
+	body_def_plat7.type = b2_staticBody;
+	body_def_plat7.position = b2Vec2(65.0f, 1.25f);
+
+	b2BodyDef body_def_plat8;
+	body_def_plat8.type = b2_staticBody;
+	body_def_plat8.position = b2Vec2(75.0f, 1.25f);
+
+	b2BodyDef body_def_plat9;
+	body_def_plat9.type = b2_staticBody;
+	body_def_plat9.position = b2Vec2(100.0f, 1.25f);
+
+	b2BodyDef body_def_plat10;
+	body_def_plat10.type = b2_staticBody;
+	body_def_plat10.position = b2Vec2(105.0f, 2.0f);
+
+	//create bodies
+	plat1_body_ = world_->CreateBody(&body_def_plat1);
+	plat2_body_ = world_->CreateBody(&body_def_plat2);
+	plat3_body_ = world_->CreateBody(&body_def_plat3);
+	plat4_body_ = world_->CreateBody(&body_def_plat4);
+	plat5_body_ = world_->CreateBody(&body_def_plat5);
+	plat6_body_ = world_->CreateBody(&body_def_plat6);
+	plat7_body_ = world_->CreateBody(&body_def_plat7);
+	plat8_body_ = world_->CreateBody(&body_def_plat8);
+	plat9_body_ = world_->CreateBody(&body_def_plat9);
+	plat10_body_ = world_->CreateBody(&body_def_plat10);
+
+	// create the shape
+	b2PolygonShape shape_plat1;
+	shape_plat1.SetAsBox(plat1_dimensions.x(), plat1_dimensions.y());
+
+	b2PolygonShape shape_plat2;
+	shape_plat2.SetAsBox(plat2_dimensions.x(), plat2_dimensions.y());
+
+	b2PolygonShape shape_plat3;
+	shape_plat3.SetAsBox(plat3_dimensions.x(), plat3_dimensions.y());
+
+	b2PolygonShape shape_plat4;
+	shape_plat4.SetAsBox(plat4_dimensions.x(), plat4_dimensions.y());
+
+	b2PolygonShape shape_plat5;
+	shape_plat5.SetAsBox(plat5_dimensions.x(), plat5_dimensions.y());
+
+	b2PolygonShape shape_plat6;
+	shape_plat6.SetAsBox(plat6_dimensions.x(), plat6_dimensions.y());
+
+	b2PolygonShape shape_plat7;
+	shape_plat7.SetAsBox(plat7_dimensions.x(), plat7_dimensions.y());
+
+	b2PolygonShape shape_plat8;
+	shape_plat8.SetAsBox(plat8_dimensions.x(), plat8_dimensions.y());
+
+	b2PolygonShape shape_plat9;
+	shape_plat9.SetAsBox(plat9_dimensions.x(), plat9_dimensions.y());
+
+	b2PolygonShape shape_plat10;
+	shape_plat10.SetAsBox(plat10_dimensions.x(), plat10_dimensions.y());
+
+	// create the fixture
+	b2FixtureDef fixture_def_plat1;
+	fixture_def_plat1.shape = &shape_plat1;
+
+	b2FixtureDef fixture_def_plat2;
+	fixture_def_plat2.shape = &shape_plat2;
+
+	b2FixtureDef fixture_def_plat3;
+	fixture_def_plat3.shape = &shape_plat3;
+
+	b2FixtureDef fixture_def_plat4;
+	fixture_def_plat4.shape = &shape_plat4;
+
+	b2FixtureDef fixture_def_plat5;
+	fixture_def_plat5.shape = &shape_plat5;
+
+	b2FixtureDef fixture_def_plat6;
+	fixture_def_plat6.shape = &shape_plat6;
+
+	b2FixtureDef fixture_def_plat7;
+	fixture_def_plat7.shape = &shape_plat7;
+
+	b2FixtureDef fixture_def_plat8;
+	fixture_def_plat8.shape = &shape_plat8;
+
+	b2FixtureDef fixture_def_plat9;
+	fixture_def_plat9.shape = &shape_plat9;
+
+	b2FixtureDef fixture_def_plat10;
+	fixture_def_plat10.shape = &shape_plat10;
+
+	// create the fixture on the rigid body
+	plat1_body_->CreateFixture(&fixture_def_plat1);
+	plat2_body_->CreateFixture(&fixture_def_plat2);
+	plat3_body_->CreateFixture(&fixture_def_plat3);
+	plat4_body_->CreateFixture(&fixture_def_plat4);
+	plat5_body_->CreateFixture(&fixture_def_plat5);
+	plat6_body_->CreateFixture(&fixture_def_plat6);
+	plat7_body_->CreateFixture(&fixture_def_plat7);
+	plat8_body_->CreateFixture(&fixture_def_plat8);
+	plat9_body_->CreateFixture(&fixture_def_plat9);
+	plat10_body_->CreateFixture(&fixture_def_plat10);
+
+	// update visuals from simulation data
+	plat1.UpdateFromSimulation(plat1_body_);
+	plat2.UpdateFromSimulation(plat2_body_);
+	plat3.UpdateFromSimulation(plat3_body_);
+	plat4.UpdateFromSimulation(plat4_body_);
+	plat5.UpdateFromSimulation(plat5_body_);
+	plat6.UpdateFromSimulation(plat6_body_);
+	plat7.UpdateFromSimulation(plat7_body_);
+	plat8.UpdateFromSimulation(plat8_body_);
+	plat9.UpdateFromSimulation(plat9_body_);
+	plat10.UpdateFromSimulation(plat10_body_);
 }
 
 
@@ -241,12 +428,20 @@ void SceneApp::SetupLights()
 
 void SceneApp::UpdateSimulation(float frame_time)
 {
-	gef::DebugOut("%.f \n", player_body_->GetLinearVelocity().x);
+	//gef::DebugOut("%.f \n", player_body_->GetLinearVelocity().x);
+	gef::DebugOut("%.11f \n", player_body_->GetPosition().y);
+	player_body_->SetAngularVelocity(0);
 
 
 	game_speed += 0.05;
 
-	player_body_->ApplyLinearImpulseToCenter(b2Vec2(0.05f, 0.0f), true);
+	if (player_body_->GetLinearVelocity().x < 4) {
+		player_body_->ApplyLinearImpulseToCenter(b2Vec2(0.5f, 0.0f), true);
+	}
+
+	else if (player_body_->GetLinearVelocity().x < 20) {
+		player_body_->ApplyLinearImpulseToCenter(b2Vec2(0.04f, 0.0f), true);
+	}
 
 	camera_pos = player_body_->GetPosition().x;
 	camera_pos = player_body_->GetPosition().x;
@@ -313,8 +508,8 @@ void SceneApp::UpdateSimulation(float frame_time)
 		const gef::SonyController* controller = input_manager_->controller_input()->GetController(0);
 		gef::Keyboard* keyboard = input_manager_->keyboard();
 
-		if (controller->buttons_pressed() && gef_SONY_CTRL_CROSS || (keyboard->IsKeyDown(gef::Keyboard::KC_X))) {
-			player_body_->ApplyLinearImpulse(b2Vec2(0.0f, 1.0f), player_body_->GetPosition(), true);
+		if (controller->buttons_pressed() && gef_SONY_CTRL_CROSS || (keyboard->IsKeyPressed(gef::Keyboard::KC_X))) {
+			player_body_->ApplyLinearImpulseToCenter(b2Vec2(0.0f, 7.0f), true);
 		}
 	}
 }
@@ -435,6 +630,7 @@ void SceneApp::GameInit()
 
 	InitPlayer();
 	InitGround();
+	InitPlatforms();
 
 	// load audio assets
 	if (audio_manager_)
@@ -471,6 +667,36 @@ void SceneApp::GameRelease()
 
 	delete ground_mesh_;
 	ground_mesh_ = NULL;
+
+	delete plat1_mesh_;
+	plat1_mesh_ = NULL;
+
+	delete plat2_mesh_;
+	plat2_mesh_ = NULL;
+
+	delete plat3_mesh_;
+	plat3_mesh_ = NULL;
+
+	delete plat4_mesh_;
+	plat4_mesh_ = NULL;
+
+	delete plat5_mesh_;
+	plat5_mesh_ = NULL;
+
+	delete plat6_mesh_;
+	plat6_mesh_ = NULL;
+
+	delete plat7_mesh_;
+	plat7_mesh_ = NULL;
+
+	delete plat8_mesh_;
+	plat8_mesh_ = NULL;
+
+	delete plat9_mesh_;
+	plat9_mesh_ = NULL;
+
+	delete plat10_mesh_;
+	plat10_mesh_ = NULL;
 
 	delete primitive_builder_;
 	primitive_builder_ = NULL;
@@ -509,7 +735,7 @@ void SceneApp::GameRender()
 	renderer_3d_->set_projection_matrix(projection_matrix);
 
 	// view
-	gef::Vector4 camera_eye(camera_pos, 2.0f, 10.0f);
+	gef::Vector4 camera_eye(camera_pos, 2.0f, 15.0f);
 	gef::Vector4 camera_lookat(camera_pos, 0.0f, 0.0f);
 	gef::Vector4 camera_up(0.0f, 1.0f, 0.0f);
 	gef::Matrix44 view_matrix;
@@ -522,6 +748,19 @@ void SceneApp::GameRender()
 
 	// draw ground
 	renderer_3d_->DrawMesh(ground_);
+	renderer_3d_->DrawMesh(ground_2);
+
+	//draw platforms
+	renderer_3d_->DrawMesh(plat1);
+	renderer_3d_->DrawMesh(plat2);
+	renderer_3d_->DrawMesh(plat3);
+	renderer_3d_->DrawMesh(plat4);
+	renderer_3d_->DrawMesh(plat5);
+	renderer_3d_->DrawMesh(plat6);
+	renderer_3d_->DrawMesh(plat7);
+	renderer_3d_->DrawMesh(plat8);
+	renderer_3d_->DrawMesh(plat9);
+	renderer_3d_->DrawMesh(plat10);
 
 	// draw player
 	if(color == "RED"){
@@ -537,7 +776,6 @@ void SceneApp::GameRender()
 	}
 	renderer_3d_->DrawMesh(player_);
 	renderer_3d_->set_override_material(NULL);
-	renderer_3d_->DrawMesh(ground_2);
 
 	renderer_3d_->End();
 
@@ -580,24 +818,29 @@ void SceneApp::GameOptionsUpdate(float frame_time)
 	}
 
 	if (sound_selected == true) {
-		if (sound_volume_ >= 0.0f & sound_volume_ <= 1.0f)
+		if (sound_volume_ >= -0.5f & sound_volume_ <= 1.0f)
 		{
-			if (controller->buttons_pressed() & gef_SONY_CTRL_RIGHT || (keyboard->IsKeyPressed(gef::Keyboard::KC_RIGHT)))
-			{
-				sound_volume_ = sound_volume_ + 0.1;
-				GameOptionsRender();
-				//UpdateAudio(frame_time);
+			if (sound_volume_ < 1.0f) {
+				if (controller->buttons_pressed() & gef_SONY_CTRL_RIGHT || (keyboard->IsKeyPressed(gef::Keyboard::KC_RIGHT)))
+				{
+					sound_volume_ = sound_volume_ + 0.1;
+					GameOptionsRender();
+					//UpdateAudio(frame_time);
+				}
 			}
-
+			
 			if (controller->buttons_pressed() & gef_SONY_CTRL_LEFT || (keyboard->IsKeyPressed(gef::Keyboard::KC_LEFT)))
 			{
-				sound_volume_ = sound_volume_ - 0.1;
-				GameOptionsRender();
-				//UpdateAudio(frame_time);
+				if (sound_volume_ > 0.0f) {
+					sound_volume_ = sound_volume_ - 0.1;
+					GameOptionsRender();
+					//UpdateAudio(frame_time);
+				}
+				
 
 			}
 		}
-		else if (sound_volume_ > 1.0f)
+		/*else if (sound_volume_ > 1.0f)
 		{
 			sound_volume_ = 1.0f;
 			GameOptionsRender();
@@ -608,7 +851,7 @@ void SceneApp::GameOptionsUpdate(float frame_time)
 			sound_volume_ = 0.0f;
 			GameOptionsRender();
 			//UpdateAudio(frame_time);
-		}
+		}*/
 	}
 	else {
 
@@ -669,7 +912,7 @@ void SceneApp::GameOptionsRender()
 			1.5f,
 			0xffffffff,
 			gef::TJ_CENTRE,
-			"SOUND : %.0f", sound_volume_ * 10);
+			"SOUND : %.0f", fabs(sound_volume_ * 10));
 
 
 		font_->RenderText(
