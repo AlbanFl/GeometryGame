@@ -7,7 +7,10 @@
 enum OBJECT_TYPE
 {
 	PLAYER,
-	TRAMPOLINE
+	TRAMPOLINE,
+	FINISH
+
+
 };
 
 class GameObject : public gef::MeshInstance
@@ -33,6 +36,17 @@ class Trampoline : public GameObject
 {
 public:
 	Trampoline();
+
+	
 };
+
+class Finish : public GameObject
+{
+public:
+	Finish();
+
+};
+
+
 
 #endif // _GAME_OBJECT_H

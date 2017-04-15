@@ -18,6 +18,8 @@ enum GAMESTATE
 	PLAY_GAME,
 	FRONTEND,
 	GAME_OPTIONS,
+	FINISH_SCREEN,
+	PAUSE_SCREEN
 };
 
 
@@ -229,7 +231,10 @@ private:
 	bool start_selected;
 	bool sound_selected;
 	bool is_paused;
+	bool continue_selected;
+	bool options_selected;
 	float fps_;
+	
 
 	char* color;
 
@@ -247,6 +252,16 @@ private:
 	void GameOptionsRelease();
 	void GameOptionsUpdate(float frame_time);
 	void GameOptionsRender();
+
+	void FinishInit();
+	void FinishRelease();
+	void FinishUpdate(float frame_time);
+	void FinishRender();
+
+	void PausescreenInit();
+	void PausescreenRelease();
+	void PausescreenUpdate(float frame_time);
+	void PausescreenRender();
 
 	// audio update function
 	void UpdateAudio(float frame_time);
