@@ -43,6 +43,7 @@ private:
 	void InitGround();
 	void InitFont();
 	void InitPlatforms();
+	void InitTrampoline();
 	void CleanUpFont();
 	void DrawHUD();
 	void SetupLights();
@@ -76,12 +77,31 @@ private:
 	// ground variables
 	gef::Mesh* ground_mesh_;
 	gef::Mesh* ground_mesh_2;
+	gef::Mesh* ground_mesh_3;
+	gef::Mesh* ground_mesh_4;
 
 	GameObject ground_;
 	GameObject ground_2;
+	GameObject ground_3;
+	GameObject ground_4;
 
 	b2Body* ground_body_;
 	b2Body* ground_body_2;
+	b2Body* ground_body_3;
+	b2Body* ground_body_4;
+
+	//trampolines variable
+	gef::Mesh* tramp_mesh_;
+	gef::Mesh* tramp_mesh_2;
+	gef::Mesh* tramp_mesh_3;
+
+	Trampoline tramp_;
+	Trampoline tramp_2;
+	Trampoline tramp_3;
+
+	b2Body* tramp_body_;
+	b2Body* tramp_body_2;
+	b2Body* tramp_body_3;
 
 	//platforms variables
 	gef::Mesh* plat1_mesh_;
@@ -124,6 +144,82 @@ private:
 	GameObject plat10;
 	b2Body* plat10_body_;
 
+	gef::Mesh* plat11_mesh_;
+	GameObject plat11;
+	b2Body* plat11_body_;
+
+	gef::Mesh* plat12_mesh_;
+	GameObject plat12;
+	b2Body* plat12_body_;
+
+	gef::Mesh* plat13_mesh_;
+	GameObject plat13;
+	b2Body* plat13_body_;
+
+	gef::Mesh* plat14_mesh_;
+	GameObject plat14;
+	b2Body* plat14_body_;
+
+	gef::Mesh* plat15_mesh_;
+	GameObject plat15;
+	b2Body* plat15_body_;
+
+	gef::Mesh* plat16_mesh_;
+	GameObject plat16;
+	b2Body* plat16_body_;
+
+	gef::Mesh* plat17_mesh_;
+	GameObject plat17;
+	b2Body* plat17_body_;
+
+	gef::Mesh* plat18_mesh_;
+	GameObject plat18;
+	b2Body* plat18_body_;
+
+	gef::Mesh* plat19_mesh_;
+	GameObject plat19;
+	b2Body* plat19_body_;
+
+	gef::Mesh* plat20_mesh_;
+	GameObject plat20;
+	b2Body* plat20_body_;
+
+	gef::Mesh* plat21_mesh_;
+	GameObject plat21;
+	b2Body* plat21_body_;
+
+	gef::Mesh* plat22_mesh_;
+	GameObject plat22;
+	b2Body* plat22_body_;
+
+	gef::Mesh* plat23_mesh_;
+	GameObject plat23;
+	b2Body* plat23_body_;
+
+	gef::Mesh* plat24_mesh_;
+	GameObject plat24;
+	b2Body* plat24_body_;
+
+	gef::Mesh* plat25_mesh_;
+	GameObject plat25;
+	b2Body* plat25_body_;
+
+	gef::Mesh* plat26_mesh_;
+	GameObject plat26;
+	b2Body* plat26_body_;
+
+	gef::Mesh* plat27_mesh_;
+	GameObject plat27;
+	b2Body* plat27_body_;
+
+	gef::Mesh* plat28_mesh_;
+	GameObject plat28;
+	b2Body* plat28_body_;
+
+	gef::Mesh* plat29_mesh_;
+	GameObject plat29;
+	b2Body* plat29_body_;
+
 	// Audio variables
 	int sfx_id_;
 	int sfx_voice_id_;
@@ -154,7 +250,6 @@ private:
 
 	// audio update function
 	void UpdateAudio(float frame_time);
-	int arrondi(float nombre);
 
 	float camera_pos;
 	float game_speed;

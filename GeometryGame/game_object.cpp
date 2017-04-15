@@ -40,3 +40,7 @@ void Player::DecrementHealth()
 }
 
 
+Trampoline::Trampoline()
+{
+	set_type(TRAMPOLINE);
+}
