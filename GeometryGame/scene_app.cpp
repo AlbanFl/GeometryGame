@@ -45,6 +45,8 @@ void SceneApp::Init()
 	sprite_renderer_ = gef::SpriteRenderer::Create(platform_);
 	InitFont();
 
+	music_playing_ = false;
+
 	// initialise input manager
 	input_manager_ = gef::InputManager::Create(platform_);
 
@@ -895,6 +897,8 @@ void SceneApp::GameInit()
 
 		// play music
 		audio_manager_->PlayMusic();
+
+		music_playing_ = true;
 	}
 }
 
@@ -1041,6 +1045,7 @@ void SceneApp::GameUpdate(float frame_time)
 	// trigger a sound effect
 
 	UpdateSimulation(frame_time);
+	UpdateAudio(frame_time);
 
 	if (controller->buttons_pressed() && gef_SONY_CTRL_START || (keyboard->IsKeyPressed(gef::Keyboard::KC_P)))
 	{
@@ -1108,10 +1113,7 @@ void SceneApp::GameRender()
 	{
 		renderer_3d_->set_override_material(&primitive_builder_->blue_material());
 	}
-	if (color == "GREEN")
-	{
-		renderer_3d_->set_override_material(&primitive_builder_->green_material());
-	}
+
 	renderer_3d_->DrawMesh(player_);
 	renderer_3d_->DrawMesh(tramp_);
 	renderer_3d_->DrawMesh(tramp_2);
@@ -1194,14 +1196,10 @@ void SceneApp::GameOptionsUpdate(float frame_time)
 
 		if (controller->buttons_pressed() && gef_SONY_CTRL_LEFT && color == "RED" || (keyboard->IsKeyPressed(gef::Keyboard::KC_LEFT)) && color == "RED")
 		{
-			color = "GREEN";
-			GameOptionsRender();
-		}
-		else if (controller->buttons_pressed() && gef_SONY_CTRL_LEFT && color == "GREEN" || (keyboard->IsKeyPressed(gef::Keyboard::KC_LEFT)) && color == "GREEN")
-		{
 			color = "BLUE";
 			GameOptionsRender();
 		}
+	
 		else if (controller->buttons_pressed() && gef_SONY_CTRL_LEFT && color == "BLUE" || (keyboard->IsKeyPressed(gef::Keyboard::KC_LEFT)) && color == "BLUE")
 		{
 			color = "RED";
@@ -1215,14 +1213,10 @@ void SceneApp::GameOptionsUpdate(float frame_time)
 		}
 		else if (controller->buttons_pressed() && gef_SONY_CTRL_RIGHT && color == "BLUE" || (keyboard->IsKeyPressed(gef::Keyboard::KC_RIGHT)) && color == "BLUE")
 		{
-			color = "GREEN";
-			GameOptionsRender();
-		}
-		else if (controller->buttons_pressed() && gef_SONY_CTRL_RIGHT && color == "GREEN" || (keyboard->IsKeyPressed(gef::Keyboard::KC_RIGHT)) && color == "GREEN")
-		{
 			color = "RED";
 			GameOptionsRender();
 		}
+
 	}
 
 	if (controller->buttons_pressed() && gef_SONY_CTRL_DOWN && sound_selected == true || (keyboard->IsKeyPressed(gef::Keyboard::KC_DOWN)) && sound_selected == true)
@@ -1240,8 +1234,46 @@ void SceneApp::GameOptionsUpdate(float frame_time)
 void SceneApp::GameOptionsRender()
 {
 	sprite_renderer_->Begin();
-	if (sound_selected == true) {
+	if (is_paused == false) {
+		if (sound_selected == true) {
 
+
+			font_->RenderText(
+				sprite_renderer_,
+				gef::Vector4(platform_.width()*0.5f, platform_.height()*0.5f - 56.0f, -0.99f),
+				1.5f,
+				0xffffffff,
+				gef::TJ_CENTRE,
+				"SOUND : %.0f", fabs(sound_volume_ * 10));
+
+
+			font_->RenderText(
+				sprite_renderer_,
+				gef::Vector4(platform_.width()*0.5f, platform_.height()*0.5f - 16.0f, -0.99f),
+				1.0f,
+				0xff000000,
+				gef::TJ_CENTRE,
+				"CUBE COLOR: %s", color);
+		}
+		else {
+			font_->RenderText(
+				sprite_renderer_,
+				gef::Vector4(platform_.width()*0.5f, platform_.height()*0.5f - 56.0f, -0.99f),
+				1.0f,
+				0xff000000,
+				gef::TJ_CENTRE,
+				"SOUND : %.0f", sound_volume_ * 10);
+
+			font_->RenderText(
+				sprite_renderer_,
+				gef::Vector4(platform_.width()*0.5f, platform_.height()*0.5f - 16.0f, -0.99f),
+				1.5f,
+				0xffffffff,
+				gef::TJ_CENTRE,
+				"CUBE COLOR: %s", color);
+		}
+	}
+	else {
 
 		font_->RenderText(
 			sprite_renderer_,
@@ -1250,32 +1282,6 @@ void SceneApp::GameOptionsRender()
 			0xffffffff,
 			gef::TJ_CENTRE,
 			"SOUND : %.0f", fabs(sound_volume_ * 10));
-
-
-		font_->RenderText(
-			sprite_renderer_,
-			gef::Vector4(platform_.width()*0.5f, platform_.height()*0.5f - 16.0f, -0.99f),
-			1.0f,
-			0xff000000,
-			gef::TJ_CENTRE,
-			"CUBE COLOR: %s", color);
-	}
-	else {
-		font_->RenderText(
-			sprite_renderer_,
-			gef::Vector4(platform_.width()*0.5f, platform_.height()*0.5f - 56.0f, -0.99f),
-			1.0f,
-			0xff000000,
-			gef::TJ_CENTRE,
-			"SOUND : %.0f", sound_volume_ * 10);
-
-		font_->RenderText(
-			sprite_renderer_,
-			gef::Vector4(platform_.width()*0.5f, platform_.height()*0.5f - 16.0f, -0.99f),
-			1.5f,
-			0xffffffff,
-			gef::TJ_CENTRE,
-			"CUBE COLOR: %s", color);
 	}
 
 	//render circle icon
@@ -1599,4 +1605,23 @@ void SceneApp::PausescreenRender()
 	
 
 	sprite_renderer_->End();
+}
+
+void SceneApp::UpdateAudio(float frame_time) {
+
+	const gef::SonyController* controller = input_manager_->controller_input()->GetController(0);
+
+	if (music_playing_ == true)
+	{
+		gef::VolumeInfo volume_info;
+		volume_info.volume = sound_volume_;
+		volume_info.pan = sound_volume_;
+
+		if (sfx_id_ != -1) {
+			audio_manager_->SetSampleVoiceVolumeInfo(sfx_voice_id_, volume_info);
+		}
+
+		audio_manager_->SetMusicVolumeInfo(volume_info);
+	}
+
 }

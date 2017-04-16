@@ -229,6 +229,7 @@ private:
 	int sfx_id_;
 	int sfx_voice_id_;
 	float sound_volume_;
+	bool music_playing_;
 
 	// Menu Variables
 	bool start_selected;
