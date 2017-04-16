@@ -45,6 +45,8 @@ void SceneApp::Init()
 	sprite_renderer_ = gef::SpriteRenderer::Create(platform_);
 	InitFont();
 
+	music_playing_ = false;
+
 	// initialise input manager
 	input_manager_ = gef::InputManager::Create(platform_);
 
@@ -895,6 +897,8 @@ void SceneApp::GameInit()
 
 		// play music
 		audio_manager_->PlayMusic();
+
+		music_playing_ = true;
 	}
 }
 
@@ -1041,6 +1045,7 @@ void SceneApp::GameUpdate(float frame_time)
 	// trigger a sound effect
 
 	UpdateSimulation(frame_time);
+	UpdateAudio(frame_time);
 
 	if (controller->buttons_pressed() && gef_SONY_CTRL_START || (keyboard->IsKeyPressed(gef::Keyboard::KC_P)))
 	{
@@ -1602,4 +1607,21 @@ void SceneApp::PausescreenRender()
 	sprite_renderer_->End();
 }
 
-UpdateAudio(frame_time)
+void SceneApp::UpdateAudio(float frame_time) {
+
+	const gef::SonyController* controller = input_manager_->controller_input()->GetController(0);
+
+	if (music_playing_ == true)
+	{
+		gef::VolumeInfo volume_info;
+		volume_info.volume = sound_volume_;
+		volume_info.pan = sound_volume_;
+
+		if (sfx_id_ != -1) {
+			audio_manager_->SetSampleVoiceVolumeInfo(sfx_voice_id_, volume_info);
+		}
+
+		audio_manager_->SetMusicVolumeInfo(volume_info);
+	}
+
+}
