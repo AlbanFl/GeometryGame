@@ -81,16 +81,19 @@ private:
 	gef::Mesh* ground_mesh_2;
 	gef::Mesh* ground_mesh_3;
 	gef::Mesh* ground_mesh_4;
+	gef::Mesh* ground_mesh_5;
 
 	GameObject ground_;
 	GameObject ground_2;
 	GameObject ground_3;
 	GameObject ground_4;
+	GameObject ground_5;
 
 	b2Body* ground_body_;
 	b2Body* ground_body_2;
 	b2Body* ground_body_3;
 	b2Body* ground_body_4;
+	b2Body* ground_body_5;
 
 	//trampolines variable
 	gef::Mesh* tramp_mesh_;
@@ -270,7 +273,7 @@ private:
 	void UpdateAudio(float frame_time);
 
 	float camera_pos;
-	float game_speed;
+	float time;
 
 };
 
