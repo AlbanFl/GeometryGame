@@ -910,6 +910,12 @@ void SceneApp::UpdateSimulation(float frame_time)
 		FinishInit();
 	}
 
+	if (player_body_->GetPosition().x > 350) {
+		win = true;
+		game_state_ = FINISH_SCREEN;
+		FinishInit();
+	}
+
 	for (int contact_num = 0; contact_num<contact_count; ++contact_num)
 	{
 		if (contact->IsTouching())
@@ -997,7 +1003,6 @@ void SceneApp::FrontendUpdate(float frame_time)
 	if (controller->buttons_pressed() && gef_SONY_CTRL_UP & start_selected == false || (keyboard->IsKeyPressed(gef::Keyboard::KC_UP)) && start_selected == false)
 	{
 		start_selected = true;
-	
 	}
 }
 
@@ -1511,7 +1516,7 @@ void SceneApp::FinishUpdate(float frame_time)
 			retry_selected = false;
 		}
 
-		if (controller->buttons_pressed() && gef_SONY_CTRL_UP & retry_selected == false || (keyboard->IsKeyPressed(gef::Keyboard::KC_UP)) && retry_selected == false)
+		else if (controller->buttons_pressed() && gef_SONY_CTRL_UP && retry_selected == false || (keyboard->IsKeyPressed(gef::Keyboard::KC_UP)) && retry_selected == false)
 		{
 			retry_selected = true;
 
@@ -1545,6 +1550,7 @@ void SceneApp::FinishUpdate(float frame_time)
 
 void SceneApp::FinishRender()
 {
+	sprite_renderer_->Begin();
 	if (win == true)
 	{
 		font_->RenderText(
@@ -1557,7 +1563,7 @@ void SceneApp::FinishRender()
 
 		gef::Sprite button_continue;
 		button_continue.set_texture(button_icon_cross);
-		button_continue.set_position(gef::Vector4(platform_.width()*0.5f + 200.0f, platform_.height()*0.5f + 170.0f, -0.99f));
+		button_continue.set_position(gef::Vector4(platform_.width()*0.5f + 240.0f, platform_.height()*0.5f + 130.0f, -0.99f));
 		button_continue.set_height(32.0f);
 		button_continue.set_width(32.0f);
 		sprite_renderer_->DrawSprite(button_continue);
@@ -1570,7 +1576,7 @@ void SceneApp::FinishRender()
 			gef::TJ_CENTRE,
 			"Continue");
 	}
-	else {
+	else if (win == false) {
 		if (retry_selected == true) {
 			font_->RenderText(
 				sprite_renderer_,
@@ -1582,7 +1588,7 @@ void SceneApp::FinishRender()
 
 			font_->RenderText(
 				sprite_renderer_,
-				gef::Vector4(platform_.width()*0.5f, platform_.height()*0.5f - 16.0f, -0.99f),
+				gef::Vector4(platform_.width()*0.5f, platform_.height()*0.5f - 25.0f, -0.99f),
 				1.5f,
 				0xffffffff,
 				gef::TJ_CENTRE,
@@ -1590,17 +1596,17 @@ void SceneApp::FinishRender()
 
 			font_->RenderText(
 				sprite_renderer_,
-				gef::Vector4(platform_.width()*0.5f, platform_.height()*0.5f +14.0f, -0.99f),
+				gef::Vector4(platform_.width()*0.5f, platform_.height()*0.5f + 14.0f, -0.99f),
 				1.0f,
 				0xff000000,
 				gef::TJ_CENTRE,
 				"QUIT");
 		}
-		else {
+		else if (retry_selected == false) {
 
 			font_->RenderText(
 				sprite_renderer_,
-				gef::Vector4(platform_.width()*0.5f, platform_.height()*0.5f - 56.0f, -0.99f),
+				gef::Vector4(platform_.width()*0.5f, platform_.height()*0.5f - 86.0f, -0.99f),
 				1.25f,
 				0xff000000,
 				gef::TJ_CENTRE,
@@ -1608,7 +1614,7 @@ void SceneApp::FinishRender()
 
 			font_->RenderText(
 				sprite_renderer_,
-				gef::Vector4(platform_.width()*0.5f, platform_.height()*0.5f - 16.0f, -0.99f),
+				gef::Vector4(platform_.width()*0.5f, platform_.height()*0.5f - 25.0f, -0.99f),
 				1.0f,
 				0xff000000,
 				gef::TJ_CENTRE,
@@ -1623,8 +1629,8 @@ void SceneApp::FinishRender()
 				"QUIT");
 
 		}
-
 	}
+	sprite_renderer_->End();
 }
 
 void SceneApp::PausescreenInit()
@@ -1672,7 +1678,7 @@ void SceneApp::PausescreenUpdate(float frame_time)
 		if (continue_selected == true)
 		{
 			game_state_ = PLAY_GAME;
-			GameInit();
+			//GameInit();
 			is_paused = false;
 		}
 		else if (options_selected == true) {
@@ -1710,7 +1716,7 @@ void SceneApp::PausescreenRender()
 
 		font_->RenderText(
 			sprite_renderer_,
-			gef::Vector4(platform_.width()*0.5f, platform_.height()*0.5f - 16.0f, -0.99f),
+			gef::Vector4(platform_.width()*0.5f, platform_.height()*0.5f - 14.0f, -0.99f),
 			1.0f,
 			0xff000000,
 			gef::TJ_CENTRE,
@@ -1718,7 +1724,7 @@ void SceneApp::PausescreenRender()
 
 		font_->RenderText(
 			sprite_renderer_,
-			gef::Vector4(platform_.width()*0.5f, platform_.height()*0.5f + 14.0f, -0.99f),
+			gef::Vector4(platform_.width()*0.5f, platform_.height()*0.5f + 20.0f, -0.99f),
 			1.0f,
 			0xff000000,
 			gef::TJ_CENTRE,
@@ -1737,7 +1743,7 @@ void SceneApp::PausescreenRender()
 
 		font_->RenderText(
 			sprite_renderer_,
-			gef::Vector4(platform_.width()*0.5f, platform_.height()*0.5f - 16.0f, -0.99f),
+			gef::Vector4(platform_.width()*0.5f, platform_.height()*0.5f - 25.0f, -0.99f),
 			1.5f,
 			0xffffffff,
 			gef::TJ_CENTRE,
@@ -1745,7 +1751,7 @@ void SceneApp::PausescreenRender()
 
 		font_->RenderText(
 			sprite_renderer_,
-			gef::Vector4(platform_.width()*0.5f, platform_.height()*0.5f + 14.0f, -0.99f),
+			gef::Vector4(platform_.width()*0.5f, platform_.height()*0.5f + 20.0f, -0.99f),
 			1.0f,
 			0xff000000,
 			gef::TJ_CENTRE,
@@ -1763,7 +1769,7 @@ void SceneApp::PausescreenRender()
 
 		font_->RenderText(
 			sprite_renderer_,
-			gef::Vector4(platform_.width()*0.5f, platform_.height()*0.5f - 16.0f, -0.99f),
+			gef::Vector4(platform_.width()*0.5f, platform_.height()*0.5f - 14.0f, -0.99f),
 			1.0f,
 			0xff000000,
 			gef::TJ_CENTRE,
@@ -1771,7 +1777,7 @@ void SceneApp::PausescreenRender()
 
 		font_->RenderText(
 			sprite_renderer_,
-			gef::Vector4(platform_.width()*0.5f, platform_.height()*0.5f + 14.0f, -0.99f),
+			gef::Vector4(platform_.width()*0.5f, platform_.height()*0.5f + 20.0f, -0.99f),
 			1.5f,
 			0xffffffff,
 			gef::TJ_CENTRE,
