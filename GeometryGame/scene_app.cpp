@@ -1364,7 +1364,7 @@ void SceneApp::FinishRender()
 			1.5f,
 			0xffffffff,
 			gef::TJ_CENTRE,
-			"You have reached the finish line in %.1f, congratulations!", time);
+			"You have reached the finish line in %.1fs, congratulations!", time);
 
 		font_->RenderText(
 			sprite_renderer_,
@@ -1372,7 +1372,7 @@ void SceneApp::FinishRender()
 			1.5f,
 			0xffffffff,
 			gef::TJ_CENTRE,
-			"Developer's record is 31.1s, try to beat it !");
+			"Developer's record is 30.8s, try to beat it !");
 
 		gef::Sprite button_continue;
 		button_continue.set_texture(button_icon_cross);
