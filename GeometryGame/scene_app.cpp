@@ -696,7 +696,6 @@ void SceneApp::UpdateSimulation(float frame_time)
 	}
 
 	camera_pos = player_body_->GetPosition().x;
-	camera_pos = player_body_->GetPosition().x;
 	// update physics world
 
 	float32 timeStep = 1.0f / 60.0f;
@@ -723,6 +722,7 @@ void SceneApp::UpdateSimulation(float frame_time)
 	}
 
 	if (player_body_->GetPosition().x > 404) {
+		audio_manager_->PlaySample(sfx_id_, false);
 		win = true;
 		game_state_ = FINISH_SCREEN;
 		FinishInit();
@@ -890,10 +890,10 @@ void SceneApp::GameInit()
 	if (audio_manager_)
 	{
 		// load a sound effect
-		sfx_id_ = audio_manager_->LoadSample("box_collected.wav", platform_);
+		sfx_id_ = audio_manager_->LoadSample("Success.wav", platform_);
 
 		// load in music
-		audio_manager_->LoadMusic("music.wav", platform_);
+		audio_manager_->LoadMusic("Which_Way_Is_Up_Game.wav", platform_);
 
 		// play music
 		audio_manager_->PlayMusic();
